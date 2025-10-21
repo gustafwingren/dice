@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "../styles/design-tokens.css";
+@import "../styles/micro-interactions.css";
+
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  
+  --z-modal: 1000;
+  --z-modal-backdrop: 999;
+  
+  /* Dark mode colors */
+  --color-dark-bg: #111827;
+  --color-dark-surface: #1f2937;
+  --color-dark-border: #374151;
+  --color-dark-text: #f3f4f6;
+  --color-dark-text-muted: #9ca3af;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  /* CSS Reset */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    @apply bg-neutral-50 text-neutral-900;
+  }
+  
+  /* Dark mode base styles */
+  .dark body {
+    @apply bg-neutral-900 text-neutral-100;
+  }
+
+  /* Accessibility: Focus styles */
+  :focus-visible {
+    outline: 2px solid oklch(58% 0.22 295); /* primary-500 */
+    outline-offset: 2px;
+  }
+
+  /* Remove default button styles */
+  button {
+    font-family: inherit;
+  }
+
+  /* Ensure images don't overflow */
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Remove default form styles */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* Improve text rendering */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+  
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Skip link for keyboard navigation */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+}
