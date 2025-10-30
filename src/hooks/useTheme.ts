@@ -21,6 +21,7 @@ export function useTheme() {
   const [mounted, setMounted] = useState(false);
 
   // Initialize theme from localStorage or system preference
+  // Note: We only set the state here; the effect below will handle applying the theme to the DOM
   useEffect(() => {
     setMounted(true);
     
