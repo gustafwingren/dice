@@ -149,7 +149,8 @@ export interface ProgressiveLoadState {
 // Example usage
 const [visibleCount, setVisibleCount] = useState(50);
 const incrementSize = 50;
-const hasMore = items.length > visibleCount;
+// hasMore is derived: visibleCount < totalCount
+const hasMore = visibleCount < items.length;
 const showMore = () => setVisibleCount(prev => Math.min(prev + incrementSize, items.length));
 ```
 

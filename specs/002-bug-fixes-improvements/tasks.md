@@ -25,9 +25,9 @@
 
 **Purpose**: Type definitions that all three user stories depend on
 
-- [ ] T001 [P] Add FormValidationState interface to src/types/index.ts
-- [ ] T002 [P] Add createFormValidationState factory function to src/types/index.ts
-- [ ] T003 [P] Add ProgressiveLoadState interface to src/types/index.ts
+- [X] T001 [P] Add FormValidationState interface to src/types/index.ts
+- [X] T002 [P] Add createFormValidationState factory function to src/types/index.ts
+- [X] T003 [P] Add ProgressiveLoadState interface to src/types/index.ts
 
 **Checkpoint**: Type definitions available for all components
 

@@ -178,6 +178,50 @@ export class ValidationError extends Error {
 }
 
 /**
+ * Form-level validation state
+ * Tracks which fields have been touched and whether form submission has been attempted
+ */
+export interface FormValidationState {
+  /** Set of field names that have been touched (user has interacted with them) */
+  touchedFields: Set<string>;
+  
+  /** Whether form submission has been attempted */
+  submitAttempted: boolean;
+  
+  /** Current validation errors by field name */
+  errors: Map<string, string>;
+}
+
+/**
+ * Factory function to create initial form validation state
+ * 
+ * Note: Returns frozen Set and Map objects to prevent accidental mutation across components.
+ * If you need to update these, create new instances.
+ */
+export function createFormValidationState(): FormValidationState {
+  return {
+    touchedFields: Object.freeze(new Set<string>()) as Set<string>,
+    submitAttempted: false,
+    errors: Object.freeze(new Map<string, string>()) as Map<string, string>
+  };
+}
+
+/**
+ * State for managing progressive loading in large lists
+ * Used to show "Show more" functionality for dice/set libraries
+ */
+export interface ProgressiveLoadState {
+  /** Number of items currently visible */
+  visibleCount: number;
+  
+  /** Increment size when user clicks "Show more" */
+  incrementSize: number;
+  
+  /** Total items available */
+  totalCount: number;
+}
+
+/**
  * Application-wide constants
  */
 export const CONSTANTS = {

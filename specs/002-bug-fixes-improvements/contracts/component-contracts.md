@@ -229,13 +229,11 @@ export interface ProgressiveLoadState {
   
   /** Total items available */
   totalCount: number;
-  
-  /** Whether there are more items to load */
-  hasMore: boolean;
 }
 
 /**
  * Helper to create initial load state
+ * Note: hasMore is derived from visibleCount < totalCount, not stored
  */
 export function createProgressiveLoadState(
   totalCount: number,
@@ -245,8 +243,7 @@ export function createProgressiveLoadState(
   return {
     visibleCount: Math.min(initialVisible, totalCount),
     incrementSize,
-    totalCount,
-    hasMore: totalCount > initialVisible
+    totalCount
   };
 }
 ```

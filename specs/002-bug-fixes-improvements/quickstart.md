@@ -72,7 +72,7 @@ export interface ProgressiveLoadState {
   visibleCount: number;
   incrementSize: number;
   totalCount: number;
-  hasMore: boolean;
+  // Note: hasMore is derived from visibleCount < totalCount
 }
 ```
 
@@ -242,9 +242,9 @@ const visibleDice = sortedDice.slice(0, visibleDiceCount);
 const visibleSets = sortedSets.slice(0, visibleSetsCount);
 ```
 
-4. Add "Show more" buttons:
+4. Add "Show more" buttons (hasMore derived from visibleCount < totalCount):
 ```typescript
-{sortedDice.length > visibleDiceCount && (
+{visibleDiceCount < sortedDice.length && (
   <button
     onClick={() => setVisibleDiceCount(prev => prev + 50)}
     aria-label={`Show 50 more dice (${sortedDice.length - visibleDiceCount} remaining)`}
