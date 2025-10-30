@@ -23,6 +23,9 @@ export function useTheme() {
   // Initialize theme from localStorage or system preference
   // Note: We only set the state here; the effect below will handle applying the theme to the DOM
   useEffect(() => {
+    // Guard check for SSR - only run in browser environment
+    if (typeof window === 'undefined') return;
+    
     setMounted(true);
     
     // Try to load from localStorage (user preference takes priority)
@@ -41,8 +44,10 @@ export function useTheme() {
   // Apply theme to document and save to localStorage
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem(STORAGE_KEY, newTheme);
-    applyTheme(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, newTheme);
+      applyTheme(newTheme);
+    }
   };
 
   // Toggle between light and dark
@@ -70,6 +75,8 @@ export function useTheme() {
  * Apply theme by adding/removing dark class on document root
  */
 function applyTheme(theme: Theme) {
+  if (typeof window === 'undefined') return;
+  
   const root = document.documentElement;
   
   if (theme === 'dark') {
