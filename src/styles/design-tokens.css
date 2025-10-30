@@ -1,0 +1,213 @@
+/**
+ * Design System Tokens for Tailwind CSS v4
+ * 
+ * Custom color palette for the Digital Dice Creator application.
+ * This is a completely custom theme with unique colors.
+ * 
+ * Color Philosophy:
+ * - Primary: Deep purple for dice-related actions and interactive elements
+ * - Accent: Vibrant cyan for highlights and CTAs
+ * - Success: Fresh emerald for success states
+ * - Warning: Warm coral for warnings
+ * - Danger: Bold crimson for errors and destructive actions
+ * - Neutral: Cool slate for UI structure and text
+ * 
+ * ⚠️ IMPORTANT: Default Tailwind Colors Disabled
+ * 
+ * This theme uses `--color-*: initial` to disable ALL default Tailwind v4 colors.
+ * 
+ * Disabled colors include:
+ * - slate, gray, zinc, neutral, stone (gray scale variants)
+ * - red, orange, amber, yellow (warm colors)
+ * - lime, green, emerald, teal, cyan (cool/green colors)
+ * - sky, blue, indigo, violet, purple (blue/purple colors)
+ * - fuchsia, pink, rose (pink/magenta colors)
+ * 
+ * Impact on third-party components:
+ * - Components expecting bg-blue-500, text-red-600, etc. will NOT work
+ * - Third-party libraries using default Tailwind colors must be:
+ *   1. Configured to use our custom colors (primary, accent, success, etc.)
+ *   2. Wrapped with custom styling to override their defaults
+ *   3. Avoided in favor of custom-built components
+ * 
+ * Rationale:
+ * - Ensures consistent brand identity across the application
+ * - Prevents accidental use of non-brand colors
+ * - Forces intentional color choices aligned with design system
+ * - Reduces CSS bundle size by eliminating unused default colors
+ * 
+ * If you need to use a third-party component library, consider:
+ * - Building custom components instead
+ * - Using headless UI libraries (no styling opinions)
+ * - Manually mapping their props to our custom color system
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* 
+   * Disable all default Tailwind colors
+   * This removes: red, blue, green, yellow, purple, pink, indigo, cyan, etc.
+   * Only our custom colors (primary, accent, success, warning, danger, neutral) remain.
+   * 
+   * ⚠️ CRITICAL WARNING - Third-Party Component Compatibility:
+   * Setting `--color-*: initial` will BREAK any third-party component libraries 
+   * that rely on standard Tailwind color classes (e.g., `bg-blue-500`, `text-red-600`).
+   * This includes popular libraries like:
+   *   - Headless UI, Radix UI (if using default Tailwind styling)
+   *   - Tailwind UI components
+   *   - DaisyUI, Flowbite, and other Tailwind-based component libraries
+   * 
+   * Before adding third-party components:
+   *   1. Check if they use default Tailwind color classes
+   *   2. If yes, you'll need to either:
+   *      a) Restyle the components using our custom colors, OR
+   *      b) Remove this `--color-*: initial` line and handle color conflicts differently
+   * 
+   * This project intentionally uses only custom colors for complete brand control.
+   */
+  --color-*: initial;
+  
+  /* ==================== CUSTOM COLOR PALETTE ==================== */
+  
+  /* Primary - Deep Purple (Main brand color for dice interactions) */
+  --color-primary-50: oklch(97% 0.02 295);
+  --color-primary-100: oklch(94% 0.04 295);
+  --color-primary-200: oklch(88% 0.08 295);
+  --color-primary-300: oklch(80% 0.13 295);
+  --color-primary-400: oklch(68% 0.18 295);
+  --color-primary-500: oklch(58% 0.22 295);
+  --color-primary-600: oklch(50% 0.24 295);
+  --color-primary-700: oklch(43% 0.20 295);
+  --color-primary-800: oklch(36% 0.16 295);
+  --color-primary-900: oklch(30% 0.12 295);
+  --color-primary-950: oklch(22% 0.08 295);
+  
+  /* Accent - Vibrant Cyan (Call-to-actions and highlights) */
+  --color-accent-50: oklch(96% 0.02 210);
+  --color-accent-100: oklch(93% 0.04 210);
+  --color-accent-200: oklch(87% 0.08 210);
+  --color-accent-300: oklch(79% 0.13 210);
+  --color-accent-400: oklch(70% 0.16 210);
+  --color-accent-500: oklch(62% 0.18 210);
+  --color-accent-600: oklch(53% 0.16 210);
+  --color-accent-700: oklch(45% 0.13 210);
+  --color-accent-800: oklch(38% 0.10 210);
+  --color-accent-900: oklch(32% 0.08 210);
+  --color-accent-950: oklch(24% 0.05 210);
+  
+  /* Success - Fresh Emerald (Success states and positive feedback) */
+  --color-success-50: oklch(96% 0.02 155);
+  --color-success-100: oklch(92% 0.05 155);
+  --color-success-200: oklch(86% 0.10 155);
+  --color-success-300: oklch(78% 0.14 155);
+  --color-success-400: oklch(70% 0.18 155);
+  --color-success-500: oklch(62% 0.19 155);
+  --color-success-600: oklch(54% 0.17 155);
+  --color-success-700: oklch(46% 0.14 155);
+  --color-success-800: oklch(39% 0.11 155);
+  --color-success-900: oklch(33% 0.09 155);
+  --color-success-950: oklch(25% 0.06 155);
+  
+  /* Warning - Warm Coral (Warnings and cautionary states) */
+  --color-warning-50: oklch(97% 0.02 45);
+  --color-warning-100: oklch(94% 0.05 45);
+  --color-warning-200: oklch(88% 0.10 45);
+  --color-warning-300: oklch(80% 0.15 45);
+  --color-warning-400: oklch(72% 0.18 45);
+  --color-warning-500: oklch(65% 0.19 45);
+  --color-warning-600: oklch(57% 0.17 45);
+  --color-warning-700: oklch(49% 0.14 45);
+  --color-warning-800: oklch(42% 0.11 45);
+  --color-warning-900: oklch(36% 0.09 45);
+  --color-warning-950: oklch(27% 0.06 45);
+  
+  /* Danger - Bold Crimson (Errors and destructive actions) */
+  --color-danger-50: oklch(97% 0.02 20);
+  --color-danger-100: oklch(94% 0.04 20);
+  --color-danger-200: oklch(88% 0.08 20);
+  --color-danger-300: oklch(80% 0.13 20);
+  --color-danger-400: oklch(70% 0.19 20);
+  --color-danger-500: oklch(62% 0.23 20);
+  --color-danger-600: oklch(54% 0.24 20);
+  --color-danger-700: oklch(47% 0.20 20);
+  --color-danger-800: oklch(40% 0.16 20);
+  --color-danger-900: oklch(34% 0.13 20);
+  --color-danger-950: oklch(25% 0.09 20);
+  
+  /* Neutral - Cool Slate (UI structure, text, and backgrounds) */
+  --color-neutral-50: oklch(98% 0.002 250);
+  --color-neutral-100: oklch(96% 0.004 250);
+  --color-neutral-200: oklch(92% 0.008 250);
+  --color-neutral-300: oklch(85% 0.012 250);
+  --color-neutral-400: oklch(68% 0.018 250);
+  --color-neutral-500: oklch(52% 0.022 250);
+  --color-neutral-600: oklch(42% 0.024 250);
+  --color-neutral-700: oklch(35% 0.026 250);
+  --color-neutral-800: oklch(26% 0.028 250);
+  --color-neutral-900: oklch(20% 0.030 250);
+  --color-neutral-950: oklch(12% 0.028 250);
+  
+  /* Essential colors */
+  --color-white: #fff;
+  --color-black: #000;
+
+  /* ==================== DICE-SPECIFIC TOKENS ==================== */
+  
+  /* Die visualization sizes */
+  --size-die-sm: 3rem;     /* 48px */
+  --size-die-md: 4rem;     /* 64px */
+  --size-die-lg: 6rem;     /* 96px */
+  --size-die-xl: 8rem;     /* 128px */
+
+  /* Animation durations for dice rolling */
+  --animation-duration-roll: 1500ms;
+  --animation-duration-bounce: 300ms;
+  --animation-duration-fade: 200ms;
+}
+
+/**
+ * USAGE GUIDE:
+ * 
+ * Primary (Deep Purple - Main interactions):
+ *   bg-primary-600, text-primary-500, border-primary-400
+ * 
+ * Accent (Vibrant Cyan - CTAs and highlights):
+ *   bg-accent-500, text-accent-600, border-accent-400
+ * 
+ * Success (Fresh Emerald):
+ *   bg-success-500, text-success-600, border-success-400
+ * 
+ * Warning (Warm Coral):
+ *   bg-warning-500, text-warning-600, border-warning-400
+ * 
+ * Danger (Bold Crimson):
+ *   bg-danger-500, text-danger-600, border-danger-400
+ * 
+ * Neutral (Cool Slate - UI structure):
+ *   bg-neutral-50 (light backgrounds)
+ *   bg-neutral-900 (dark backgrounds)
+ *   text-neutral-900 (dark text)
+ *   text-neutral-100 (light text)
+ *   border-neutral-300 (borders)
+ * 
+ * ⚠️ THIRD-PARTY COMPONENT COMPATIBILITY:
+ * 
+ * Default Tailwind utilities are DISABLED (bg-red-500, text-blue-600, etc.).
+ * 
+ * When integrating third-party components:
+ * ❌ WILL NOT WORK:
+ *    - <Button className="bg-blue-500">Click me</Button>
+ *    - Libraries with hardcoded Tailwind colors (bg-red-*, text-green-*, etc.)
+ * 
+ * ✅ WILL WORK:
+ *    - <Button className="bg-primary-600">Click me</Button>
+ *    - Headless UI libraries (Radix, Headless UI, etc.)
+ *    - Components with custom styling or CSS-in-JS
+ * 
+ * Best practices:
+ * 1. Always use our custom color system (primary, accent, success, etc.)
+ * 2. Prefer building custom components over third-party styled components
+ * 3. If using a library, ensure it accepts custom color classes
+ * 4. Test third-party components thoroughly before integrating
+ */
