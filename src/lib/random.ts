@@ -17,6 +17,12 @@ export function getSecureRandomInt(min: number, max: number): number {
   }
   
   const range = max - min + 1;
+  
+  // Validate range is within safe integer bounds
+  if (range > Number.MAX_SAFE_INTEGER) {
+    throw new Error('Range too large - exceeds MAX_SAFE_INTEGER');
+  }
+  
   const bytesNeeded = Math.ceil(Math.log2(range) / 8);
   const maxValue = Math.pow(256, bytesNeeded);
   const threshold = maxValue - (maxValue % range);

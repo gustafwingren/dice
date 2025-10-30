@@ -7,12 +7,9 @@ import { Die, DiceSet, StorageData } from '@/types';
 import { createDie } from '@/lib/die-factory';
 import { createDiceSet } from '@/lib/set-factory';
 
-// Create a closure to capture the mock store
-// Using a function to avoid temporal dead zone issues with jest.mock hoisting
-const getMockStore = (() => {
-  const store = new Map<string, unknown>();
-  return () => store;
-})();
+// Create a mutable reference for the mock store
+// This allows us to replace the store instance in beforeEach
+const mockStoreRef = { current: new Map<string, unknown>() };
 
 // Mock localforage module
 jest.mock('localforage', () => {
@@ -21,34 +18,28 @@ jest.mock('localforage', () => {
     default: {
       createInstance: jest.fn(() => ({
         getItem: jest.fn((key: string) => {
-          const store = getMockStore();
-          return Promise.resolve(store.get(key));
+          return Promise.resolve(mockStoreRef.current.get(key));
         }),
         setItem: jest.fn((key: string, value: unknown) => {
-          const store = getMockStore();
-          store.set(key, value);
+          mockStoreRef.current.set(key, value);
           return Promise.resolve(value);
         }),
         clear: jest.fn(() => {
-          const store = getMockStore();
-          store.clear();
+          mockStoreRef.current.clear();
           return Promise.resolve();
         }),
       })),
     },
     createInstance: jest.fn(() => ({
       getItem: jest.fn((key: string) => {
-        const store = getMockStore();
-        return Promise.resolve(store.get(key));
+        return Promise.resolve(mockStoreRef.current.get(key));
       }),
       setItem: jest.fn((key: string, value: unknown) => {
-        const store = getMockStore();
-        store.set(key, value);
+        mockStoreRef.current.set(key, value);
         return Promise.resolve(value);
       }),
       clear: jest.fn(() => {
-        const store = getMockStore();
-        store.clear();
+        mockStoreRef.current.clear();
         return Promise.resolve();
       }),
     })),
@@ -81,23 +72,22 @@ function createTextDie(name: string, sides: number): Die {
 
 describe('storage', () => {
   beforeEach(() => {
-    // Reset mock store
-    const mockStore = getMockStore();
-    mockStore.clear();
+    // Create a fresh Map instance for each test to prevent interference
+    mockStoreRef.current = new Map<string, unknown>();
     jest.clearAllMocks();
     
     // Initialize empty storage
-    mockStore.set('diceCreator:dice', {
+    mockStoreRef.current.set('diceCreator:dice', {
       version: 1,
       data: [],
     } as StorageData<Die[]>);
     
-    mockStore.set('diceCreator:sets', {
+    mockStoreRef.current.set('diceCreator:sets', {
       version: 1,
       data: [],
     } as StorageData<DiceSet[]>);
     
-    mockStore.set('diceCreator:schemaVersion', 1);
+    mockStoreRef.current.set('diceCreator:schemaVersion', 1);
   });
   
   describe('saveDie', () => {
@@ -106,7 +96,7 @@ describe('storage', () => {
       
       await saveDie(die);
       
-      const storageData = getMockStore().get('diceCreator:dice') as StorageData<Die[]>;
+      const storageData = mockStoreRef.current.get('diceCreator:dice') as StorageData<Die[]>;
       expect(storageData.data).toHaveLength(1);
       expect(storageData.data[0].id).toBe(die.id);
       expect(storageData.data[0].name).toBe('Test Die');
@@ -119,7 +109,7 @@ describe('storage', () => {
       const updatedDie = { ...die, name: 'Updated Name' };
       await saveDie(updatedDie);
       
-      const storageData = getMockStore().get('diceCreator:dice') as StorageData<Die[]>;
+      const storageData = mockStoreRef.current.get('diceCreator:dice') as StorageData<Die[]>;
       expect(storageData.data).toHaveLength(1);
       expect(storageData.data[0].name).toBe('Updated Name');
     });
@@ -232,7 +222,7 @@ describe('storage', () => {
       
       await saveDiceSet(diceSet);
       
-      const storageData = getMockStore().get('diceCreator:sets') as StorageData<DiceSet[]>;
+      const storageData = mockStoreRef.current.get('diceCreator:sets') as StorageData<DiceSet[]>;
       expect(storageData.data).toHaveLength(1);
       expect(storageData.data[0].id).toBe(diceSet.id);
     });

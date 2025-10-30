@@ -68,9 +68,9 @@ export function isFace(value: unknown): value is Face {
 export function validateFaceContent(value: string | number): boolean {
   if (typeof value === 'number') return true;
   
-  // Strip line breaks and check if whitespace-only
-  const strippedValue = value.replace(/[\r\n]+/g, '').trim();
-  return strippedValue.length > 0;
+  // Check if string is empty or contains only whitespace
+  // trim() handles all Unicode whitespace characters
+  return value.trim().length > 0;
 }
 
 /**
