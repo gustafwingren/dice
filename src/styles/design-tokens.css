@@ -11,12 +11,45 @@
  * - Warning: Warm coral for warnings
  * - Danger: Bold crimson for errors and destructive actions
  * - Neutral: Cool slate for UI structure and text
+ * 
+ * ⚠️ IMPORTANT: Default Tailwind Colors Disabled
+ * 
+ * This theme uses `--color-*: initial` to disable ALL default Tailwind v4 colors.
+ * 
+ * Disabled colors include:
+ * - slate, gray, zinc, neutral, stone (gray scale variants)
+ * - red, orange, amber, yellow (warm colors)
+ * - lime, green, emerald, teal, cyan (cool/green colors)
+ * - sky, blue, indigo, violet, purple (blue/purple colors)
+ * - fuchsia, pink, rose (pink/magenta colors)
+ * 
+ * Impact on third-party components:
+ * - Components expecting bg-blue-500, text-red-600, etc. will NOT work
+ * - Third-party libraries using default Tailwind colors must be:
+ *   1. Configured to use our custom colors (primary, accent, success, etc.)
+ *   2. Wrapped with custom styling to override their defaults
+ *   3. Avoided in favor of custom-built components
+ * 
+ * Rationale:
+ * - Ensures consistent brand identity across the application
+ * - Prevents accidental use of non-brand colors
+ * - Forces intentional color choices aligned with design system
+ * - Reduces CSS bundle size by eliminating unused default colors
+ * 
+ * If you need to use a third-party component library, consider:
+ * - Building custom components instead
+ * - Using headless UI libraries (no styling opinions)
+ * - Manually mapping their props to our custom color system
  */
 
 @import "tailwindcss";
 
 @theme {
-  /* Disable all default Tailwind colors */
+  /* 
+   * Disable all default Tailwind colors
+   * This removes: red, blue, green, yellow, purple, pink, indigo, cyan, etc.
+   * Only our custom colors (primary, accent, success, warning, danger, neutral) remain.
+   */
   --color-*: initial;
   
   /* ==================== CUSTOM COLOR PALETTE ==================== */
@@ -141,4 +174,24 @@
  *   text-neutral-900 (dark text)
  *   text-neutral-100 (light text)
  *   border-neutral-300 (borders)
+ * 
+ * ⚠️ THIRD-PARTY COMPONENT COMPATIBILITY:
+ * 
+ * Default Tailwind utilities are DISABLED (bg-red-500, text-blue-600, etc.).
+ * 
+ * When integrating third-party components:
+ * ❌ WILL NOT WORK:
+ *    - <Button className="bg-blue-500">Click me</Button>
+ *    - Libraries with hardcoded Tailwind colors (bg-red-*, text-green-*, etc.)
+ * 
+ * ✅ WILL WORK:
+ *    - <Button className="bg-primary-600">Click me</Button>
+ *    - Headless UI libraries (Radix, Headless UI, etc.)
+ *    - Components with custom styling or CSS-in-JS
+ * 
+ * Best practices:
+ * 1. Always use our custom color system (primary, accent, success, etc.)
+ * 2. Prefer building custom components over third-party styled components
+ * 3. If using a library, ensure it accepts custom color classes
+ * 4. Test third-party components thoroughly before integrating
  */
