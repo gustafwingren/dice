@@ -6,6 +6,7 @@ import {
   isFaceContentType,
   isValidHexColor,
   isValidUUID,
+  validateFaceContent,
   validateFace,
   validateDie,
   validateDiceSet
@@ -55,6 +56,50 @@ describe('Validation Utilities', () => {
       expect(isValidUUID('not-a-uuid')).toBe(false);
       expect(isValidUUID('123')).toBe(false);
       expect(isValidUUID('')).toBe(false);
+    });
+  });
+
+  describe('validateFaceContent', () => {
+    it('should return true for numbers', () => {
+      expect(validateFaceContent(0)).toBe(true);
+      expect(validateFaceContent(5)).toBe(true);
+      expect(validateFaceContent(-10)).toBe(true);
+      expect(validateFaceContent(999)).toBe(true);
+    });
+
+    it('should return true for non-empty strings', () => {
+      expect(validateFaceContent('Hello')).toBe(true);
+      expect(validateFaceContent('A')).toBe(true);
+      expect(validateFaceContent('Test content')).toBe(true);
+    });
+
+    it('should return false for empty strings', () => {
+      expect(validateFaceContent('')).toBe(false);
+    });
+
+    it('should return false for whitespace-only strings', () => {
+      expect(validateFaceContent('   ')).toBe(false);
+      expect(validateFaceContent('\t')).toBe(false);
+      expect(validateFaceContent('\t\t  ')).toBe(false);
+    });
+
+    it('should return false for strings with only line breaks', () => {
+      expect(validateFaceContent('\n')).toBe(false);
+      expect(validateFaceContent('\n\n')).toBe(false);
+      expect(validateFaceContent('\r\n')).toBe(false);
+      expect(validateFaceContent('\r')).toBe(false);
+    });
+
+    it('should return false for mixed whitespace and line breaks', () => {
+      expect(validateFaceContent('  \n  ')).toBe(false);
+      expect(validateFaceContent('\t\n\r')).toBe(false);
+      expect(validateFaceContent(' \n \r\n \t ')).toBe(false);
+    });
+
+    it('should return true for strings with content and whitespace', () => {
+      expect(validateFaceContent('  Hello  ')).toBe(true);
+      expect(validateFaceContent('\nTest\n')).toBe(true);
+      expect(validateFaceContent(' A ')).toBe(true);
     });
   });
 
