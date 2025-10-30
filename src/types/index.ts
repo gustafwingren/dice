@@ -160,7 +160,8 @@ export type ValidationErrorCode =
   | 'INVALID_SET_SIZE'
   | 'MIXED_CONTENT_TYPES'
   | 'INVALID_UUID'
-  | 'INVALID_NAME_LENGTH';
+  | 'INVALID_NAME_LENGTH'
+  | 'EMPTY_CONTENT';
 
 /**
  * Validation error

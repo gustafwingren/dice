@@ -86,7 +86,7 @@ export function validateFace(face: unknown): asserts face is Face {
   // Skip for color faces as they store content in the color property
   if (f.contentType !== 'color' && !validateFaceContent(f.value)) {
     throw new ValidationError(
-      'INVALID_TEXT_LENGTH',
+      'EMPTY_CONTENT',
       'Face content cannot be empty or whitespace only',
       'value'
     );
