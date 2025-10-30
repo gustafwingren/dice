@@ -49,6 +49,22 @@
    * Disable all default Tailwind colors
    * This removes: red, blue, green, yellow, purple, pink, indigo, cyan, etc.
    * Only our custom colors (primary, accent, success, warning, danger, neutral) remain.
+   * 
+   * ⚠️ CRITICAL WARNING - Third-Party Component Compatibility:
+   * Setting `--color-*: initial` will BREAK any third-party component libraries 
+   * that rely on standard Tailwind color classes (e.g., `bg-blue-500`, `text-red-600`).
+   * This includes popular libraries like:
+   *   - Headless UI, Radix UI (if using default Tailwind styling)
+   *   - Tailwind UI components
+   *   - DaisyUI, Flowbite, and other Tailwind-based component libraries
+   * 
+   * Before adding third-party components:
+   *   1. Check if they use default Tailwind color classes
+   *   2. If yes, you'll need to either:
+   *      a) Restyle the components using our custom colors, OR
+   *      b) Remove this `--color-*: initial` line and handle color conflicts differently
+   * 
+   * This project intentionally uses only custom colors for complete brand control.
    */
   --color-*: initial;
   

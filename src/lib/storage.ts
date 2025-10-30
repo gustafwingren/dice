@@ -1,6 +1,33 @@
 /**
  * Storage wrapper using localforage for IndexedDB with localStorage fallback
  * Handles saving, loading, and deleting dice and dice sets
+ * 
+ * ⚠️ IMPORTANT: SSR/Client-Side Only Usage
+ * 
+ * This module MUST only be used in client-side code (browser environment).
+ * Calling any of these storage functions during Server-Side Rendering (SSR)
+ * or Static Site Generation (SSG) will throw an error.
+ * 
+ * To safely use these functions:
+ * 1. Only call them from components marked with 'use client' directive
+ * 2. Wrap calls in useEffect or event handlers (not in component body)
+ * 3. Check typeof window !== 'undefined' before calling if needed
+ * 4. Always handle the promise rejection with try/catch
+ * 
+ * Example safe usage:
+ * ```tsx
+ * 'use client';
+ * 
+ * function MyComponent() {
+ *   useEffect(() => {
+ *     loadDice().catch(err => console.error('Failed to load:', err));
+ *   }, []);
+ * }
+ * ```
+ * 
+ * The error "Storage can only be used in browser environment" indicates
+ * you're calling storage functions during SSR/SSG. Move the call to a
+ * client-side effect or event handler.
  */
 
 import localforage from 'localforage';
@@ -10,6 +37,11 @@ import { validateDie, validateDiceSet } from './validation';
 // Lazy-initialize localforage only in browser (not during SSG build)
 let diceStore: LocalForage | null = null;
 
+/**
+ * Get or initialize the storage instance
+ * @throws {Error} If called in non-browser environment (SSR/SSG)
+ * @private
+ */
 function getDiceStore(): LocalForage {
   if (!diceStore) {
     // Only initialize in browser environment

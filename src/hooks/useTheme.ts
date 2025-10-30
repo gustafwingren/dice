@@ -26,8 +26,6 @@ export function useTheme() {
     // Guard check for SSR - only run in browser environment
     if (typeof window === 'undefined') return;
     
-    setMounted(true);
-    
     // Try to load from localStorage (user preference takes priority)
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
     
@@ -39,6 +37,9 @@ export function useTheme() {
       const systemTheme = prefersDark ? 'dark' : 'light';
       setThemeState(systemTheme);
     }
+    
+    // Mark as mounted after theme is determined
+    setMounted(true);
   }, []);
 
   // Apply theme to document and save to localStorage
