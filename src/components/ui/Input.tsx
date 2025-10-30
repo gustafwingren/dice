@@ -53,7 +53,7 @@ export function Input({
       <div className="w-full relative">
         <input
           id={inputId}
-          className={`${baseStyles} ${error ? errorStyles : normalStyles} ${className} ${floatingLabel ? 'pt-6 pb-2' : ''}`}
+          className={`${baseStyles} ${error ? errorStyles : normalStyles} ${className} pt-6 pb-2`}
           maxLength={maxLength}
           value={value}
           aria-invalid={error ? 'true' : 'false'}
