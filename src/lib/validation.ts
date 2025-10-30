@@ -50,6 +50,20 @@ export function isFace(value: unknown): value is Face {
 
 /**
  * Validate face content - checks for empty or whitespace-only content
+ * 
+ * This function validates that face content is not empty or whitespace-only.
+ * Numbers are always valid. For strings, the function strips line breaks and
+ * checks that there is at least one non-whitespace character remaining.
+ * 
+ * @param value - The face content to validate (string or number)
+ * @returns true if the content is valid (non-empty for strings, always true for numbers)
+ * 
+ * @example
+ * validateFaceContent(5) // true
+ * validateFaceContent("Hello") // true
+ * validateFaceContent("   ") // false (whitespace only)
+ * validateFaceContent("") // false (empty)
+ * validateFaceContent("\n\n") // false (only line breaks)
  */
 export function validateFaceContent(value: string | number): boolean {
   if (typeof value === 'number') return true;
