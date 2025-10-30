@@ -1,0 +1,283 @@
+/**
+ * Micro-interactions and Animation Utilities
+ * 
+ * Reusable animation classes for smooth, performant micro-interactions.
+ * All animations use CSS transforms for GPU acceleration.
+ */
+
+@layer utilities {
+  /* ==================== HOVER EFFECTS ==================== */
+  
+  /* Lift effect - gentle elevation on hover */
+  .hover-lift {
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Scale effect - gentle grow on hover */
+  .hover-scale {
+    transition: transform var(--transition-fast);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Glow effect - adds subtle glow on hover */
+  .hover-glow {
+    transition: box-shadow var(--transition-base);
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+
+  /* ==================== FOCUS EFFECTS ==================== */
+  
+  /* Enhanced focus ring */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-800;
+    transition: box-shadow var(--transition-fast);
+  }
+
+  /* Pulse focus - adds pulsing animation on focus */
+  .focus-pulse:focus-visible {
+    animation: pulse-ring 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    }
+  }
+
+  /* ==================== BUTTON PRESS EFFECTS ==================== */
+  
+  /* Press down effect - visual feedback on active state */
+  .press-effect {
+    transition: transform var(--transition-fast);
+  }
+  
+  .press-effect:active {
+    transform: scale(0.98);
+  }
+
+  /* Button bounce - adds playful bounce */
+  .button-bounce:active {
+    animation: bounce var(--animation-bounce) ease-out;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* ==================== LOADING STATES ==================== */
+  
+  /* Spin animation - for loading indicators */
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Pulse animation - gentle pulsing */
+  .pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Skeleton shimmer - for skeleton screens */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* ==================== TRANSITIONS ==================== */
+  
+  /* Smooth all - transitions all properties smoothly */
+  .transition-smooth {
+    transition: all var(--transition-base);
+  }
+
+  /* Fast transition - for immediate feedback */
+  .transition-fast {
+    transition: all var(--transition-fast);
+  }
+
+  /* Slow transition - for dramatic effects */
+  .transition-slow {
+    transition: all var(--transition-slow);
+  }
+
+  /* ==================== ENTRANCE ANIMATIONS ==================== */
+  
+  /* Fade in */
+  .fade-in {
+    animation: fade-in var(--animation-fade) ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Slide in from bottom */
+  .slide-in-bottom {
+    animation: slide-in-bottom 0.3s ease-out;
+  }
+
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Slide in from top */
+  .slide-in-top {
+    animation: slide-in-top 0.3s ease-out;
+  }
+
+  @keyframes slide-in-top {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Scale in */
+  .scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
+  @keyframes scale-in {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* ==================== DICE-SPECIFIC ANIMATIONS ==================== */
+  
+  /* Roll animation - for dice rolling */
+  .roll-animation {
+    animation: roll 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes roll {
+    0% {
+      transform: rotate(0deg) translateY(0);
+    }
+    25% {
+      transform: rotate(180deg) translateY(-20px);
+    }
+    50% {
+      transform: rotate(360deg) translateY(0);
+    }
+    75% {
+      transform: rotate(540deg) translateY(-10px);
+    }
+    100% {
+      transform: rotate(720deg) translateY(0);
+    }
+  }
+
+  /* Shake animation - for errors or invalid actions */
+  .shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-4px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* ==================== UTILITY CLASSES ==================== */
+  
+  /* Disable animations for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* GPU acceleration hint */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Smooth scrolling */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+}
