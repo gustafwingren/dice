@@ -21,6 +21,7 @@ export function useTheme() {
   const [mounted, setMounted] = useState(false);
 
   // Initialize theme from localStorage or system preference
+  // Note: We only set the state here; the effect below will handle applying the theme to the DOM
   useEffect(() => {
     setMounted(true);
     
@@ -29,13 +30,11 @@ export function useTheme() {
     
     if (stored === 'light' || stored === 'dark') {
       setThemeState(stored);
-      // Don't call applyTheme here - let the effect below handle it
     } else {
       // Fall back to system preference only if no stored preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const systemTheme = prefersDark ? 'dark' : 'light';
       setThemeState(systemTheme);
-      // Don't call applyTheme here - let the effect below handle it
     }
   }, []);
 
