@@ -82,9 +82,12 @@ export function validateFace(face: unknown): asserts face is Face {
     throw new ValidationError('INVALID_TEXT_LENGTH', 'Face value must be string or number', 'value');
   }
   
+  // Extract color check for better readability
+  const isColorFace = f.contentType === 'color';
+  
   // Whitespace validation - reject empty or whitespace-only content
   // Skip for color faces as they store content in the color property
-  if (f.contentType !== 'color' && !validateFaceContent(f.value)) {
+  if (!isColorFace && !validateFaceContent(f.value)) {
     throw new ValidationError(
       'INVALID_TEXT_LENGTH',
       'Face content cannot be empty or whitespace only',
@@ -104,7 +107,7 @@ export function validateFace(face: unknown): asserts face is Face {
   }
   
   // Color validation
-  if (f.contentType === 'color') {
+  if (isColorFace) {
     if (typeof f.color !== 'string' || !isValidHexColor(f.color)) {
       throw new ValidationError(
         'INVALID_COLOR_FORMAT',
