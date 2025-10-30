@@ -5,6 +5,7 @@
 
 import { Die, DiceSet, StorageData } from '@/types';
 import { createDie } from '@/lib/die-factory';
+import { createDiceSet } from '@/lib/set-factory';
 
 // Create a closure to capture the mock store
 // Using a function to avoid temporal dead zone issues with jest.mock hoisting
@@ -196,13 +197,7 @@ describe('storage', () => {
       await saveDie(die1);
       await saveDie(die2);
       
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: [die1.id, die2.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const diceSet = createDiceSet('Test Set', [die1.id, die2.id]);
       await saveDiceSet(diceSet);
       
       await deleteDie(die1.id);
@@ -216,13 +211,7 @@ describe('storage', () => {
       const die = createDie('Die 1', 6, 'number');
       await saveDie(die);
       
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: [die.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const diceSet = createDiceSet('Test Set', [die.id]);
       await saveDiceSet(diceSet);
       
       await deleteDie(die.id);
@@ -239,36 +228,27 @@ describe('storage', () => {
       await saveDie(die1);
       await saveDie(die2);
       
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: [die1.id, die2.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const diceSet = createDiceSet('Test Set', [die1.id, die2.id]);
       
       await saveDiceSet(diceSet);
       
       const storageData = getMockStore().get('diceCreator:sets') as StorageData<DiceSet[]>;
       expect(storageData.data).toHaveLength(1);
-      expect(storageData.data[0].id).toBe('set-1');
+      expect(storageData.data[0].id).toBe(diceSet.id);
     });
     
     it('should throw error if referenced dice do not exist', async () => {
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: ['non-existent-id'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const die = createDie('Die 1', 6, 'number');
+      const diceSet = createDiceSet('Test Set', [die.id]);
       
       await expect(saveDiceSet(diceSet)).rejects.toThrow('Referenced dice not found');
     });
     
     it('should enforce min/max dice per set', async () => {
+      // Manually create invalid dice set to test validation
+      // (factory won't allow empty array)
       const diceSet: DiceSet = {
-        id: 'set-1',
+        id: '12345678-1234-4234-8234-123456789012', // Valid UUID v4
         name: 'Empty Set',
         diceIds: [],
         createdAt: new Date().toISOString(),
@@ -290,21 +270,8 @@ describe('storage', () => {
       const die = createDie('Die 1', 6, 'number');
       await saveDie(die);
       
-      const set1: DiceSet = {
-        id: 'set-1',
-        name: 'Set 1',
-        diceIds: [die.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      
-      const set2: DiceSet = {
-        id: 'set-2',
-        name: 'Set 2',
-        diceIds: [die.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const set1 = createDiceSet('Set 1', [die.id]);
+      const set2 = createDiceSet('Set 2', [die.id]);
       
       await saveDiceSet(set1);
       await saveDiceSet(set2);
@@ -322,17 +289,11 @@ describe('storage', () => {
       const die = createDie('Die 1', 6, 'number');
       await saveDie(die);
       
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: [die.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const diceSet = createDiceSet('Test Set', [die.id]);
       
       await saveDiceSet(diceSet);
       
-      const deleted = await deleteDiceSet('set-1');
+      const deleted = await deleteDiceSet(diceSet.id);
       
       expect(deleted).toBe(true);
       
@@ -350,16 +311,10 @@ describe('storage', () => {
       const die = createDie('Die 1', 6, 'number');
       await saveDie(die);
       
-      const diceSet: DiceSet = {
-        id: 'set-1',
-        name: 'Test Set',
-        diceIds: [die.id],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const diceSet = createDiceSet('Test Set', [die.id]);
       
       await saveDiceSet(diceSet);
-      await deleteDiceSet('set-1');
+      await deleteDiceSet(diceSet.id);
       
       const dice = await loadDice();
       expect(dice).toHaveLength(1);

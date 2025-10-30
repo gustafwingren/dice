@@ -5,7 +5,7 @@
 
 import localforage from 'localforage';
 import { Die, DiceSet, StorageData, STORAGE_KEYS, CONSTANTS } from '@/types';
-import { validateDie } from './validation';
+import { validateDie, validateDiceSet } from './validation';
 
 // Lazy-initialize localforage only in browser (not during SSG build)
 let diceStore: LocalForage | null = null;
@@ -207,17 +207,10 @@ export async function deleteDie(id: string): Promise<boolean> {
  * @throws {Error} If referenced dice don't exist or validation fails
  */
 export async function saveDiceSet(diceSet: DiceSet): Promise<void> {
+  // Validate dice set before saving
+  validateDiceSet(diceSet);
+  
   try {
-    // Validate dice set structure
-    if (!diceSet.id || !diceSet.name || !Array.isArray(diceSet.diceIds)) {
-      throw new Error('Invalid dice set structure');
-    }
-    
-    if (diceSet.diceIds.length < CONSTANTS.MIN_DICE_PER_SET || 
-        diceSet.diceIds.length > CONSTANTS.MAX_DICE_PER_SET) {
-      throw new Error(`Dice set must contain ${CONSTANTS.MIN_DICE_PER_SET}-${CONSTANTS.MAX_DICE_PER_SET} dice`);
-    }
-    
     // Verify all referenced dice exist
     const diceLibrary = await loadDice();
     const existingDiceIds = new Set(diceLibrary.map(d => d.id));
