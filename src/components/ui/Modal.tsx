@@ -18,7 +18,7 @@ export interface ModalProps {
   children: ReactNode;
   
   /** Called when primary action is clicked */
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
   
   /** Primary button text */
   confirmText?: string;
@@ -119,9 +119,16 @@ export function Modal({
           </Button>
           {onConfirm && (
             <Button
-              onClick={() => {
-                onConfirm();
-                onClose();
+              onClick={async () => {
+                try {
+                  await onConfirm();
+                  onClose();
+                } catch (error) {
+                  // Re-throw error to allow parent component to handle it
+                  // Modal stays open on error
+                  console.error('Error in modal confirm action:', error);
+                  throw error;
+                }
               }}
               variant="primary"
               disabled={confirmDisabled}
