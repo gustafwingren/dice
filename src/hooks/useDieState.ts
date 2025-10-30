@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Die, Face, FaceContentType } from '@/types';
+import { Die, Face, FaceContentType, FormValidationState, createFormValidationState } from '@/types';
 import { createEmptyDie } from '@/lib/die-factory';
 import { createDefaultFaces } from '@/lib/face-factory';
 import { getCurrentTimestamp } from '@/lib/timestamp';
@@ -12,6 +12,7 @@ export interface UseDieStateReturn {
   die: Die;
   errors: string[];
   isValid: boolean;
+  validationState: FormValidationState;
   
   // Die-level updates
   updateName: (name: string) => void;
@@ -22,6 +23,11 @@ export interface UseDieStateReturn {
   
   // Face-level updates
   updateFace: (faceId: number, updates: Partial<Face>) => void;
+  
+  // Validation methods
+  markFieldTouched: (fieldName: string) => void;
+  shouldShowError: (fieldName: string) => boolean;
+  attemptSubmit: () => boolean;
   
   // Utility actions
   reset: () => void;
@@ -49,6 +55,9 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
       return [];
     }
   });
+  const [validationState, setValidationState] = useState<FormValidationState>(
+    () => createFormValidationState()
+  );
   
   // Track if we've loaded the initial die to prevent infinite loops
   const hasLoadedInitial = useRef(false);
@@ -155,16 +164,51 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
     validateAndUpdate(newDie);
   }, [validateAndUpdate]);
 
+  // T005: Mark a field as touched (called on blur)
+  const markFieldTouched = useCallback((fieldName: string) => {
+    setValidationState(prev => ({
+      ...prev,
+      touchedFields: new Set(prev.touchedFields).add(fieldName)
+    }));
+  }, []);
+
+  // T006: Check if validation error should be shown for a field
+  const shouldShowError = useCallback((fieldName: string): boolean => {
+    return validationState.touchedFields.has(fieldName) || 
+           validationState.submitAttempted;
+  }, [validationState]);
+
+  // T007: Attempt form submission and mark all fields as needing validation
+  const attemptSubmit = useCallback((): boolean => {
+    setValidationState(prev => ({ ...prev, submitAttempted: true }));
+    try {
+      validateDie(die);
+      setErrors([]);
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrors([error.message]);
+      } else {
+        setErrors(['Unknown validation error']);
+      }
+      return false;
+    }
+  }, [die, validateDie]);
+
   return {
     die,
     errors,
     isValid: errors.length === 0,
+    validationState,
     updateName,
     updateSides,
     updateBackgroundColor,
     updateTextColor,
     updateContentType,
     updateFace,
+    markFieldTouched,
+    shouldShowError,
+    attemptSubmit,
     reset,
     loadDie,
   };

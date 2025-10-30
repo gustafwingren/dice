@@ -39,14 +39,14 @@
 
 **⚠️ CRITICAL**: These hooks must be complete before US1 or US2 components can be updated
 
-- [ ] T004 Add validationState state to useDieState hook in src/hooks/useDieState.ts
-- [ ] T005 Add markFieldTouched method to useDieState hook in src/hooks/useDieState.ts
-- [ ] T006 Add shouldShowError method to useDieState hook in src/hooks/useDieState.ts
-- [ ] T007 Add attemptSubmit method to useDieState hook in src/hooks/useDieState.ts
-- [ ] T008 [P] Add validationState state to useDiceSetState hook in src/hooks/useDiceSetState.ts
-- [ ] T009 [P] Add markFieldTouched method to useDiceSetState hook in src/hooks/useDiceSetState.ts
-- [ ] T010 [P] Add shouldShowError method to useDiceSetState hook in src/hooks/useDiceSetState.ts
-- [ ] T011 [P] Add attemptSubmit method to useDiceSetState hook in src/hooks/useDiceSetState.ts
+- [X] T004 Add validationState state to useDieState hook in src/hooks/useDieState.ts
+- [X] T005 Add markFieldTouched method to useDieState hook in src/hooks/useDieState.ts
+- [X] T006 Add shouldShowError method to useDieState hook in src/hooks/useDieState.ts
+- [X] T007 Add attemptSubmit method to useDieState hook in src/hooks/useDieState.ts
+- [X] T008 [P] Add validationState state to useDiceSetState hook in src/hooks/useDiceSetState.ts
+- [X] T009 [P] Add markFieldTouched method to useDiceSetState hook in src/hooks/useDiceSetState.ts
+- [X] T010 [P] Add shouldShowError method to useDiceSetState hook in src/hooks/useDiceSetState.ts
+- [X] T011 [P] Add attemptSubmit method to useDiceSetState hook in src/hooks/useDiceSetState.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
