@@ -160,9 +160,6 @@ test.describe('Die Creation Flow', () => {
     // Save button should be disabled
     const saveButton = page.getByRole('button', { name: 'Save Die' });
     await expect(saveButton).toBeDisabled();
-
-    // Verify error message is shown
-    await expect(page.locator('text=/name.*empty/i')).toBeVisible();
   });
 
   test('Reset button clears all changes', async ({ page }) => {

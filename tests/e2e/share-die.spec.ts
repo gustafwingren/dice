@@ -225,6 +225,7 @@ test.describe('Share Die Flow', () => {
     // Name the set
     await page.getByLabel('Set Name').pressSequentially('');
     await page.getByLabel('Set Name').pressSequentially('RPG Set');
+    await page.getByLabel('Set Name').press('Tab');
 
     // Add dice to set
     // Click Add Die button to open modal

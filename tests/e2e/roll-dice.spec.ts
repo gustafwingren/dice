@@ -257,6 +257,7 @@ test.describe('Roll Dice Set Animation', () => {
   test('should roll all dice in a set', async ({ page }) => {
     // Name the set
     await page.getByLabel('Set Name').pressSequentially('Test Set');
+    await page.getByLabel('Set Name').press('Tab');
     
     // Add both dice
     await page.getByRole('button', { name: 'Add Die' }).click();
@@ -285,6 +286,7 @@ test.describe('Roll Dice Set Animation', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     
     await page.getByLabel('Set Name').pressSequentially('Mobile Set');
+    await page.getByLabel('Set Name').press('Tab');
     
     // Add a die
     await page.getByRole('button', { name: 'Add Die' }).click();
@@ -302,6 +304,7 @@ test.describe('Roll Dice Set Animation', () => {
 
   test('should disable roll button while animation is in progress for sets', async ({ page }) => {
     await page.getByLabel('Set Name').pressSequentially('Disable Set Test');
+    await page.getByLabel('Set Name').press('Tab');
     
     // Add a die
     await page.getByRole('button', { name: 'Add Die' }).click();

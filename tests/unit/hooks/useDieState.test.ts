@@ -254,4 +254,111 @@ describe('useDieState', () => {
       expect(result.current.errors).toHaveLength(0);
     });
   });
+
+  describe('validation state management (T018)', () => {
+    it('should initialize with empty touched fields and no submit attempt', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      expect(result.current.validationState.touchedFields.size).toBe(0);
+      expect(result.current.validationState.submitAttempted).toBe(false);
+    });
+
+    it('should mark field as touched when markFieldTouched is called', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.markFieldTouched('name');
+      });
+      
+      expect(result.current.validationState.touchedFields.has('name')).toBe(true);
+      expect(result.current.validationState.touchedFields.size).toBe(1);
+    });
+
+    it('should mark multiple fields as touched independently', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.markFieldTouched('name');
+        result.current.markFieldTouched('sides');
+      });
+      
+      expect(result.current.validationState.touchedFields.has('name')).toBe(true);
+      expect(result.current.validationState.touchedFields.has('sides')).toBe(true);
+      expect(result.current.validationState.touchedFields.size).toBe(2);
+    });
+
+    it('should not show error for untouched field even if invalid', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      // Default die has invalid name but field is not touched
+      expect(result.current.isValid).toBe(false);
+      expect(result.current.shouldShowError('name')).toBe(false);
+    });
+
+    it('should show error for touched field if invalid', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.markFieldTouched('name');
+      });
+      
+      // Name is still empty and invalid, but now touched
+      expect(result.current.shouldShowError('name')).toBe(true);
+    });
+
+    it('should show errors on all fields after submit attempt', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.attemptSubmit();
+      });
+      
+      expect(result.current.validationState.submitAttempted).toBe(true);
+      expect(result.current.shouldShowError('name')).toBe(true);
+      expect(result.current.shouldShowError('anyField')).toBe(true);
+    });
+
+    it('should return false from attemptSubmit when die is invalid', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      let submitResult: boolean = true;
+      act(() => {
+        submitResult = result.current.attemptSubmit();
+      });
+      
+      expect(submitResult).toBe(false);
+      expect(result.current.isValid).toBe(false);
+    });
+
+    it('should return true from attemptSubmit when die is valid', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.updateName('Valid Die');
+      });
+      
+      let submitResult: boolean = false;
+      act(() => {
+        submitResult = result.current.attemptSubmit();
+      });
+      
+      expect(submitResult).toBe(true);
+      expect(result.current.isValid).toBe(true);
+    });
+
+    it('should persist touched state across updates', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.markFieldTouched('name');
+      });
+      
+      act(() => {
+        result.current.updateSides(8);
+      });
+      
+      // Touched state should persist after die update
+      expect(result.current.validationState.touchedFields.has('name')).toBe(true);
+    });
+  });
 });

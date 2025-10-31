@@ -56,12 +56,16 @@ export function DieEditor({
     die,
     errors,
     isValid,
+    validationState,
     updateName,
     updateSides,
     updateBackgroundColor,
     updateTextColor,
     updateContentType,
     updateFace,
+    markFieldTouched,
+    shouldShowError,
+    attemptSubmit,
     reset,
   } = useDieState(initialDie);
   
@@ -71,7 +75,9 @@ export function DieEditor({
   const { showToast } = useToast();
 
   const handleSaveClick = () => {
-    if (isValid) {
+    // T024: Attempt submit to trigger validation display on all fields
+    const isValidSubmit = attemptSubmit();
+    if (isValidSubmit && isValid) {
       setIsSaveModalOpen(true);
     }
   };
@@ -140,14 +146,24 @@ export function DieEditor({
             label="Die Name"
             value={die.name}
             onChange={(e) => updateName(e.target.value)}
+            onBlur={() => markFieldTouched('name')}
             placeholder="My Custom Die"
             maxLength={MAX_NAME_LENGTH}
             showCharacterCount
+            error={
+              shouldShowError('name')
+                ? errors.find((e) =>
+                    typeof e === 'string'
+                      ? e.toLowerCase().includes('name')
+                      : false
+                  )
+                : undefined
+            }
           />
         </div>
 
-        {/* Validation errors */}
-        {errors.length > 0 && (
+        {/* Validation errors - T021: Only show after user interaction */}
+        {errors.length > 0 && (validationState.submitAttempted || validationState.touchedFields.size > 0) && (
           <div 
             className="p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg"
             role="alert"

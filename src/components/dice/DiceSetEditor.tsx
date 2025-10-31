@@ -60,10 +60,14 @@ export function DiceSetEditor({
     dice,
     errors,
     isValid,
+    validationState,
     updateSetName,
     addDie,
     removeDie,
     reorderDice,
+    markFieldTouched,
+    shouldShowError,
+    attemptSubmit,
     reset,
     canAddMoreDice,
     loadDiceSet,
@@ -115,7 +119,9 @@ export function DiceSetEditor({
   }, [searchParams, diceSets, savedDice, isLoaded, loadDiceSet, storageLoading]);
 
   const handleSaveClick = () => {
-    if (isValid) {
+    // T029: Attempt submit to trigger validation display on all fields
+    const isValidSubmit = attemptSubmit();
+    if (isValidSubmit && isValid) {
       setIsSaveModalOpen(true);
     }
   };
@@ -215,14 +221,24 @@ export function DiceSetEditor({
             label="Set Name"
             value={diceSet.name}
             onChange={(e) => updateSetName(e.target.value)}
+            onBlur={() => markFieldTouched('setName')}
             placeholder="My Dice Set"
             maxLength={MAX_NAME_LENGTH}
             showCharacterCount
+            error={
+              shouldShowError('setName')
+                ? errors.find((e) =>
+                    typeof e === 'string'
+                      ? e.toLowerCase().includes('name') // crude filter, adjust if you have error codes
+                      : false
+                  )
+                : undefined
+            }
           />
         </div>
 
-        {/* Validation errors */}
-        {errors.length > 0 && (
+        {/* Validation errors - T026: Only show after user interaction */}
+        {errors.length > 0 && (validationState.submitAttempted || validationState.touchedFields.size > 0) && (
           <div 
             className="mb-6 p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg"
             role="alert"

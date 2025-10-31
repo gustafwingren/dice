@@ -67,27 +67,27 @@
 
 **CRITICAL**: Update/add tests to verify validation timing behavior
 
-- [ ] T012 [P] [US1] Update existing DieEditor tests to verify no errors on initial render in tests/integration/die-persistence.test.tsx
-- [ ] T013 [P] [US1] Add test: errors appear after blur on invalid field in tests/integration/die-persistence.test.tsx
-- [ ] T014 [P] [US1] Add test: errors clear when field becomes valid in tests/integration/die-persistence.test.tsx
-- [ ] T015 [P] [US1] Add test: all errors shown on submit attempt in tests/integration/die-persistence.test.tsx
-- [ ] T016 [P] [US1] Update existing DiceSetEditor tests to verify no errors on initial render in tests/integration/dice-set.test.tsx
-- [ ] T017 [P] [US1] Add test: validation timing works in DiceSetEditor in tests/integration/dice-set.test.tsx
-- [ ] T018 [P] [US1] Add unit tests for useDieState validation methods in tests/unit/hooks/useDieState.test.ts
-- [ ] T019 [P] [US1] Add unit tests for useDiceSetState validation methods in tests/unit/hooks/useDiceSetState.test.ts
+- [X] T012 [P] [US1] Update existing DieEditor tests to verify no errors on initial render in tests/integration/die-persistence.test.tsx
+- [X] T013 [P] [US1] Add test: errors appear after blur on invalid field in tests/integration/die-persistence.test.tsx
+- [X] T014 [P] [US1] Add test: errors clear when field becomes valid in tests/integration/die-persistence.test.tsx
+- [X] T015 [P] [US1] Add test: all errors shown on submit attempt in tests/integration/die-persistence.test.tsx
+- [X] T016 [P] [US1] Update existing DiceSetEditor tests to verify no errors on initial render in tests/integration/dice-set.test.tsx
+- [X] T017 [P] [US1] Add test: validation timing works in DiceSetEditor in tests/integration/dice-set.test.tsx
+- [X] T018 [P] [US1] Add unit tests for useDieState validation methods in tests/unit/hooks/useDieState.test.ts
+- [X] T019 [P] [US1] Add unit tests for useDiceSetState validation methods in tests/unit/hooks/useDiceSetState.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T020 [P] [US1] Add onBlur handlers to all input fields in DieEditor component (src/components/dice/DieEditor.tsx)
-- [ ] T021 [P] [US1] Update error display logic to use shouldShowError in DieEditor component (src/components/dice/DieEditor.tsx)
-- [ ] T022 [P] [US1] Add ARIA attributes (aria-invalid, aria-describedby) to inputs in DieEditor component (src/components/dice/DieEditor.tsx)
-- [ ] T023 [P] [US1] Update error message elements with role="alert" in DieEditor component (src/components/dice/DieEditor.tsx)
-- [ ] T024 [P] [US1] Update submit handler to call attemptSubmit in DieEditor component (src/components/dice/DieEditor.tsx)
-- [ ] T025 [P] [US1] Add onBlur handlers to all input fields in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
-- [ ] T026 [P] [US1] Update error display logic to use shouldShowError in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
-- [ ] T027 [P] [US1] Add ARIA attributes (aria-invalid, aria-describedby) to inputs in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
-- [ ] T028 [P] [US1] Update error message elements with role="alert" in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
-- [ ] T029 [P] [US1] Update submit handler to call attemptSubmit in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
+- [X] T020 [P] [US1] Add onBlur handlers to all input fields in DieEditor component (src/components/dice/DieEditor.tsx)
+- [X] T021 [P] [US1] Update error display logic to use shouldShowError in DieEditor component (src/components/dice/DieEditor.tsx)
+- [X] T022 [P] [US1] Add ARIA attributes (aria-invalid, aria-describedby) to inputs in DieEditor component (src/components/dice/DieEditor.tsx)
+- [X] T023 [P] [US1] Update error message elements with role="alert" in DieEditor component (src/components/dice/DieEditor.tsx)
+- [X] T024 [P] [US1] Update submit handler to call attemptSubmit in DieEditor component (src/components/dice/DieEditor.tsx)
+- [X] T025 [P] [US1] Add onBlur handlers to all input fields in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
+- [X] T026 [P] [US1] Update error display logic to use shouldShowError in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
+- [X] T027 [P] [US1] Add ARIA attributes (aria-invalid, aria-describedby) to inputs in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
+- [X] T028 [P] [US1] Update error message elements with role="alert" in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
+- [X] T029 [P] [US1] Update submit handler to call attemptSubmit in DiceSetEditor component (src/components/dice/DiceSetEditor.tsx)
 
 **Checkpoint**: Validation timing fixed - errors only appear after user interaction - all tests passing
 
