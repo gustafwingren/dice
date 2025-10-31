@@ -234,4 +234,101 @@ test.describe('Die Creation Flow', () => {
     const saveButton = page.locator('button:has-text("Save Die")');
     await expect(saveButton).toBeVisible();
   });
+
+  // User Story 2 - Mobile Layout Order Tests
+
+  test('T030: Element order on mobile viewport (<768px)', async ({ page }) => {
+    // Set mobile viewport (below 768px breakpoint)
+    await page.setViewportSize({ width: 375, height: 812 }); // iPhone X
+    
+    // Get all main sections by their distinctive content
+    const configPanel = page.locator('text=Die Configuration').locator('..');
+    const faceEditor = page.locator('text=Die Faces').locator('..');
+    const actionButtons = page.locator('button:has-text("Save Die")').locator('..');
+    
+    // Verify all sections are visible
+    await expect(configPanel).toBeVisible();
+    await expect(faceEditor).toBeVisible();
+    await expect(actionButtons).toBeVisible();
+    
+    // Get bounding boxes to verify vertical order
+    const configBox = await configPanel.boundingBox();
+    const faceBox = await faceEditor.boundingBox();
+    const buttonBox = await actionButtons.boundingBox();
+    
+    // Verify top-to-bottom order: Config -> Face Editor -> Action Buttons
+    expect(configBox, 'Config panel bounding box should not be null').not.toBeNull();
+    expect(faceBox, 'Face editor bounding box should not be null').not.toBeNull();
+    expect(buttonBox, 'Action buttons bounding box should not be null').not.toBeNull();
+
+    // Configuration panel should be above face editor
+    expect((configBox as NonNullable<typeof configBox>).y).toBeLessThan((faceBox as NonNullable<typeof faceBox>).y);
+
+    // Face editor should be above action buttons
+    expect((faceBox as NonNullable<typeof faceBox>).y).toBeLessThan((buttonBox as NonNullable<typeof buttonBox>).y);
+  });
+
+  test('T031: Grid layout on desktop viewport (≥768px)', async ({ page }) => {
+    // Set desktop viewport (at or above 768px breakpoint)
+    await page.setViewportSize({ width: 1024, height: 768 }); // Desktop
+    
+    const configPanel = page.locator('text=Die Configuration').locator('..');
+    const faceEditor = page.locator('text=Die Faces').locator('..');
+    const actionButtons = page.locator('button:has-text("Save Die")').locator('..');
+    
+    // Verify all sections are visible
+    await expect(configPanel).toBeVisible();
+    await expect(faceEditor).toBeVisible();
+    await expect(actionButtons).toBeVisible();
+    
+    // Get bounding boxes to verify side-by-side layout
+    const configBox = await configPanel.boundingBox();
+    const faceBox = await faceEditor.boundingBox();
+    const buttonBox = await actionButtons.boundingBox();
+    
+    expect(configBox).not.toBeNull();
+    expect(faceBox).not.toBeNull();
+    expect(buttonBox).not.toBeNull();
+    
+    if (configBox && faceBox && buttonBox) {
+      // On desktop, config panel and action buttons should be in left column
+      // Face editor should be in right column (different x position)
+      // Action buttons should be below config panel in same column
+      expect(buttonBox.y).toBeGreaterThan(configBox.y);
+      
+      // Face editor x position should be different from config (side by side)
+      expect(Math.abs(faceBox.x - configBox.x)).toBeGreaterThan(100);
+    }
+  });
+
+  test('T032: Touch targets meet 44x44px minimum', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 812 });
+    
+    // Check interactive elements meet minimum touch target size
+    const saveButton = page.locator('button:has-text("Save Die")');
+    // Helper to check minimum touch target size
+    async function expectMinTouchTarget(locator: ReturnType<typeof page.locator>, name: string) {
+      const box = await locator.boundingBox();
+      expect(box).not.toBeNull();
+      if (box) {
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.width).toBeGreaterThanOrEqual(44);
+      } else {
+        throw new Error(`${name} button bounding box not found`);
+      }
+    }
+
+    // Check interactive elements meet minimum touch target size
+    await expectMinTouchTarget(page.locator('button:has-text("Save Die")'), 'Save Die');
+    await expectMinTouchTarget(page.locator('button:has-text("Roll Die")'), 'Roll Die');
+    await expectMinTouchTarget(page.locator('button:has-text("Share")'), 'Share');
+    await expectMinTouchTarget(page.locator('button:has-text("Reset")'), 'Reset');
+
+    // Check content type buttons
+    await expectMinTouchTarget(page.locator('button:has-text("Number")').first(), 'Number');
+    await expectMinTouchTarget(page.locator('button:has-text("Text")').first(), 'Text');
+    await expectMinTouchTarget(page.locator('button:has-text("Color")').first(), 'Color');
+  });
+
 });

@@ -109,18 +109,18 @@
 
 **CRITICAL**: Add E2E tests to verify mobile layout order
 
-- [ ] T030 [P] [US2] Add E2E test: verify element order on mobile viewport (<768px) in tests/e2e/create.spec.ts
-- [ ] T031 [P] [US2] Add E2E test: verify grid layout on desktop viewport (≥768px) in tests/e2e/create.spec.ts
-- [ ] T032 [P] [US2] Add E2E test: verify touch targets meet 44x44px minimum in tests/e2e/create.spec.ts
+- [X] T030 [P] [US2] Add E2E test: verify element order on mobile viewport (<768px) in tests/e2e/create.spec.ts
+- [X] T031 [P] [US2] Add E2E test: verify grid layout on desktop viewport (≥768px) in tests/e2e/create.spec.ts
+- [X] T032 [P] [US2] Add E2E test: verify touch targets meet 44x44px minimum in tests/e2e/create.spec.ts
 
 ### Implementation for User Story 2
 
-- [ ] T033 [US2] Add responsive CSS classes to DieEditor container in src/components/dice/DieEditor.tsx (flexbox with order property for mobile)
-- [ ] T034 [US2] Add order: 1 to configuration section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
-- [ ] T035 [US2] Add order: 2 to face editor section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
-- [ ] T036 [US2] Add order: 3 to action buttons section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
-- [ ] T037 [US2] Verify desktop grid layout (≥768px) remains unchanged with buttons in left column (src/components/dice/DieEditor.tsx)
-- [ ] T038 [US2] Test element order in both portrait and landscape orientations on mobile devices
+- [X] T033 [US2] Add responsive CSS classes to DieEditor container in src/components/dice/DieEditor.tsx (flexbox with order property for mobile)
+- [X] T034 [US2] Add order: 1 to configuration section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
+- [X] T035 [US2] Add order: 2 to face editor section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
+- [X] T036 [US2] Add order: 3 to action buttons section in DieEditor for mobile viewports <768px (src/components/dice/DieEditor.tsx)
+- [X] T037 [US2] Verify desktop grid layout (≥768px) remains unchanged with buttons in left column (src/components/dice/DieEditor.tsx)
+- [X] T038 [US2] Test element order in both portrait and landscape orientations on mobile devices
 
 **Checkpoint**: Mobile layout optimized - face editor before buttons on mobile, grid layout on desktop - E2E tests passing
 
