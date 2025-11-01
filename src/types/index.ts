@@ -195,14 +195,14 @@ export interface FormValidationState {
 /**
  * Factory function to create initial form validation state
  * 
- * Note: Returns frozen Set and Map objects to prevent accidental mutation across components.
- * If you need to update these, create new instances.
+ * Note: Returns new Set and Map objects for each call.
+ * When updating state, always create new instances (do not mutate in place).
  */
 export function createFormValidationState(): FormValidationState {
   return {
-    touchedFields: Object.freeze(new Set<string>()) as Set<string>,
+    touchedFields: new Set<string>(),
     submitAttempted: false,
-    errors: Object.freeze(new Map<string, string>()) as Map<string, string>
+    errors: new Map<string, string>()
   };
 }
 
