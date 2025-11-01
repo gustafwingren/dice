@@ -141,24 +141,24 @@
 
 **CRITICAL**: Add tests to verify scroll behavior and progressive loading
 
-- [ ] T039 [P] [US3] Add E2E test: verify no nested scroll containers in library in tests/e2e/library.spec.ts
-- [ ] T040 [P] [US3] Add E2E test: verify "Show more" button appears after 50 items in tests/e2e/library.spec.ts
-- [ ] T041 [P] [US3] Add E2E test: verify progressive loading increments by 50 in tests/e2e/library.spec.ts
-- [ ] T042 [P] [US3] Add integration test: verify DiceLibrary renders without overflow styles in tests/integration/dice-library.test.tsx
+- [X] T039 [P] [US3] Add E2E test: verify no nested scroll containers in library in tests/e2e/library.spec.ts
+- [X] T040 [P] [US3] Add E2E test: verify "Show more" button appears after 50 items in tests/e2e/library.spec.ts
+- [X] T041 [P] [US3] Add E2E test: verify progressive loading increments by 50 in tests/e2e/library.spec.ts
+- [X] T042 [P] [US3] Add integration test: verify DiceLibrary renders without overflow styles in tests/integration/dice-library.test.tsx
 - [ ] T043 [P] [US3] Add unit test: verify progressive load state management in tests/unit/components/DiceLibrary.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T044 [P] [US3] Remove max-height and overflow-y:auto CSS from DiceLibrary container (src/components/dice/DiceLibrary.tsx)
-- [ ] T045 [P] [US3] Add visibleDiceCount state (initial: 50) to DiceLibrary component (src/components/dice/DiceLibrary.tsx)
-- [ ] T046 [P] [US3] Add visibleSetsCount state (initial: 50) to DiceLibrary component (src/components/dice/DiceLibrary.tsx)
-- [ ] T047 [US3] Implement slice logic to show first visibleDiceCount items in DiceLibrary (src/components/dice/DiceLibrary.tsx)
-- [ ] T048 [US3] Implement slice logic to show first visibleSetsCount items in DiceLibrary (src/components/dice/DiceLibrary.tsx)
-- [ ] T049 [P] [US3] Add "Show More Dice" button with onClick handler (increment by 50) in DiceLibrary (src/components/dice/DiceLibrary.tsx)
-- [ ] T050 [P] [US3] Add "Show More Sets" button with onClick handler (increment by 50) in DiceLibrary (src/components/dice/DiceLibrary.tsx)
-- [ ] T051 [P] [US3] Add aria-label to "Show more" buttons indicating remaining count (src/components/dice/DiceLibrary.tsx)
-- [ ] T052 [US3] Conditionally render "Show more" buttons only when items.length > visibleCount (src/components/dice/DiceLibrary.tsx)
-- [ ] T053 [US3] Verify responsive grid layout uses grid-cols-1 md:grid-cols-2 lg:grid-cols-3 classes (src/components/dice/DiceLibrary.tsx)
+- [X] T044 [P] [US3] Remove max-height and overflow-y:auto CSS from DiceLibrary container (src/components/dice/DiceLibrary.tsx)
+- [X] T045 [P] [US3] Add visibleDiceCount state (initial: 50) to DiceLibrary component (src/components/dice/DiceLibrary.tsx)
+- [X] T046 [P] [US3] Add visibleSetsCount state (initial: 50) to DiceLibrary component (src/components/dice/DiceLibrary.tsx)
+- [X] T047 [US3] Implement slice logic to show first visibleDiceCount items in DiceLibrary (src/components/dice/DiceLibrary.tsx)
+- [X] T048 [US3] Implement slice logic to show first visibleSetsCount items in DiceLibrary (src/components/dice/DiceLibrary.tsx)
+- [X] T049 [P] [US3] Add "Show More Dice" button with onClick handler (increment by 50) in DiceLibrary (src/components/dice/DiceLibrary.tsx)
+- [X] T050 [P] [US3] Add "Show More Sets" button with onClick handler (increment by 50) in DiceLibrary (src/components/dice/DiceLibrary.tsx)
+- [X] T051 [P] [US3] Add aria-label to "Show more" buttons indicating remaining count (src/components/dice/DiceLibrary.tsx)
+- [X] T052 [US3] Conditionally render "Show more" buttons only when items.length > visibleCount (src/components/dice/DiceLibrary.tsx)
+- [X] T053 [US3] Verify responsive grid layout uses grid-cols-1 md:grid-cols-2 lg:grid-cols-3 classes (src/components/dice/DiceLibrary.tsx)
 
 **Checkpoint**: Nested scrolling eliminated - natural page scroll with progressive loading - all tests passing
 

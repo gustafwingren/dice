@@ -56,34 +56,58 @@ test.describe('Die Creation Flow', () => {
     // Wait for faces to regenerate
     await page.waitForTimeout(500);
 
-    // Verify 101 faces are displayed
-    const facesList = page.locator('[role="list"]').first();
-    await expect(facesList).toBeVisible();
-
-    // For 101 faces, virtualized scrolling is used (react-window)
-    // Check for the virtualized container
-    const virtualizedContainer = page.locator('[style*="position: relative"]').first();
-    await expect(virtualizedContainer).toBeVisible();
-
-    // Verify face count
+    // Verify face list header shows total count and initial visible count
     await expect(page.locator('text=Die Faces (101)')).toBeVisible();
+    await expect(page.locator('text=Showing 50 of 101')).toBeVisible();
 
-    // Verify first visible face
+    // Verify only first 50 faces are initially rendered
     const firstFace = page.locator('input[id="face-1-number"]');
+    await expect(firstFace).toBeVisible();
     await expect(firstFace).toHaveValue('1');
 
-    // Scroll down in the virtualized list to load more items
-    await virtualizedContainer.evaluate(el => {
-      el.scrollTop = el.scrollHeight;
-    });
+    const face50 = page.locator('input[id="face-50-number"]');
+    await expect(face50).toBeVisible();
+    await expect(face50).toHaveValue('50');
 
-    // Wait for virtualization to render bottom items
+    // Face 51 should not be rendered yet
+    const face51 = page.locator('input[id="face-51-number"]');
+    await expect(face51).not.toBeVisible();
+
+    // Verify "Show More Faces" button is present with correct remaining count
+    const showMoreButton = page.getByRole('button', { name: /Show 50 more faces \(51 remaining\)/ });
+    await expect(showMoreButton).toBeVisible();
+
+    // Click "Show More Faces" to load next batch
+    await showMoreButton.click();
     await page.waitForTimeout(300);
 
-    // Verify last face is accessible (may need to scroll to see it)
-    const lastFace = page.locator('input[id="face-101-number"]');
-    await expect(lastFace).toBeVisible();
-    await expect(lastFace).toHaveValue('101');
+    // Verify now showing 100 of 101
+    await expect(page.locator('text=Showing 100 of 101')).toBeVisible();
+
+    // Verify face 100 is now visible
+    const face100 = page.locator('input[id="face-100-number"]');
+    await expect(face100).toBeVisible();
+    await expect(face100).toHaveValue('100');
+
+    // Face 101 should not be visible yet
+    const face101 = page.locator('input[id="face-101-number"]');
+    await expect(face101).not.toBeVisible();
+
+    // Verify button now shows "1 remaining"
+    const showMoreButton2 = page.getByRole('button', { name: 'Show 50 more faces (1 remaining)' });
+    await expect(showMoreButton2).toBeVisible();
+
+    // Click to load final face
+    await showMoreButton2.click();
+    await page.waitForTimeout(300);
+
+    // Verify all 101 faces are now loaded
+    await expect(page.locator('text=Die Faces (101)')).toBeVisible();
+    await expect(face101).toBeVisible();
+    await expect(face101).toHaveValue('101');
+
+    // Verify "Show More Faces" button is no longer present
+    await expect(page.getByRole('button', { name: /Show More Faces/i })).not.toBeVisible();
 
     // Verify UI is still responsive
     const saveButton = page.getByRole('button', { name: 'Save Die' });
@@ -95,7 +119,7 @@ test.describe('Die Creation Flow', () => {
     // Verify no significant performance degradation (still under 60s)
     expect(duration).toBeLessThan(60);
 
-    console.log(`101-sided die created in ${duration.toFixed(2)} seconds`);
+    console.log(`101-sided die created with progressive loading in ${duration.toFixed(2)} seconds`);
   });
 
   test('Create text-type die with custom values', async ({ page }) => {
@@ -305,8 +329,6 @@ test.describe('Die Creation Flow', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
     
-    // Check interactive elements meet minimum touch target size
-    const saveButton = page.locator('button:has-text("Save Die")');
     // Helper to check minimum touch target size
     async function expectMinTouchTarget(locator: ReturnType<typeof page.locator>, name: string) {
       const box = await locator.boundingBox();

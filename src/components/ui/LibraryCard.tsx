@@ -63,6 +63,7 @@ export function LibraryCard({
 
   return (
     <div
+      role="article"
       className={`
         bg-white dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-xl dark:shadow-neutral-900 
         transition-all duration-300 cursor-pointer overflow-hidden 
