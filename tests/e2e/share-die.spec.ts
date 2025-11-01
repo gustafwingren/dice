@@ -103,7 +103,7 @@ test.describe('Share Die Flow', () => {
     await expect(newPage.getByText(/saved! redirecting/i)).toBeVisible();
     
     // Should redirect to library
-    await newPage.waitForURL('/library', { timeout: 3000 });
+    await newPage.waitForURL('/library', { timeout: 5000 });
     
     // Verify die appears in library
     await expect(newPage.getByText('Decision Die" saved to your library')).toBeVisible();

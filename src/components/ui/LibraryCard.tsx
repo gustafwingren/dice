@@ -90,7 +90,7 @@ export function LibraryCard({
           </div>
           <button
             onClick={handleDelete}
-            className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0"
+            className="p-2 min-w-11 min-h-11 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0 flex items-center justify-center"
             aria-label={`Delete ${title}`}
             tabIndex={0}
           >

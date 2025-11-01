@@ -145,7 +145,7 @@
 - [X] T040 [P] [US3] Add E2E test: verify "Show more" button appears after 50 items in tests/e2e/library.spec.ts
 - [X] T041 [P] [US3] Add E2E test: verify progressive loading increments by 50 in tests/e2e/library.spec.ts
 - [X] T042 [P] [US3] Add integration test: verify DiceLibrary renders without overflow styles in tests/integration/dice-library.test.tsx
-- [ ] T043 [P] [US3] Add unit test: verify progressive load state management in tests/unit/components/DiceLibrary.test.tsx
+- [X] T043 [P] [US3] Add unit test: verify progressive load state management in tests/unit/components/DiceLibrary.test.tsx
 
 ### Implementation for User Story 3
 
@@ -168,20 +168,20 @@
 
 **Purpose**: Final validation and improvements affecting multiple stories
 
-- [ ] T054 Run all unit tests: npm test -- tests/unit/
-- [ ] T055 Run all integration tests: npm test -- tests/integration/
-- [ ] T056 Run all E2E tests: npm run test:e2e
-- [ ] T057 Verify all existing tests still pass (no regressions)
-- [ ] T058 [P] Verify all touch targets meet 44x44px minimum in DieEditor (src/components/dice/DieEditor.tsx)
-- [ ] T059 [P] Verify all touch targets meet 44x44px minimum in DiceSetEditor (src/components/dice/DiceSetEditor.tsx)
-- [ ] T060 [P] Verify all touch targets meet 44x44px minimum in DiceLibrary (src/components/dice/DiceLibrary.tsx)
-- [ ] T061 Manual testing: Validation timing across all forms (follow quickstart.md test scenarios)
-- [ ] T062 Manual testing: Mobile responsive layout at 768px breakpoint (follow quickstart.md test scenarios)
-- [ ] T063 Manual testing: Scroll behavior on mobile devices (follow quickstart.md test scenarios)
-- [ ] T064 Run TypeScript type checking: npm run type-check
-- [ ] T065 Run Lighthouse audit: verify Performance score 90+ and Accessibility score 90+
-- [ ] T066 Verify WCAG 2.1 AA compliance using jest-axe or manual audit
-- [ ] T067 Update .github/copilot-instructions.md if any new patterns emerged (optional)
+- [X] T054 Run all unit tests: npm test -- tests/unit/
+- [X] T055 Run all integration tests: npm test -- tests/integration/
+- [X] T056 Run all E2E tests: npm run test:e2e
+- [X] T057 Verify all existing tests still pass (no regressions)
+- [X] T058 [P] Verify all touch targets meet 44x44px minimum in DieEditor (src/components/dice/DieEditor.tsx)
+- [X] T059 [P] Verify all touch targets meet 44x44px minimum in DiceSetEditor (src/components/dice/DiceSetEditor.tsx)
+- [X] T060 [P] Verify all touch targets meet 44x44px minimum in DiceLibrary (src/components/dice/DiceLibrary.tsx)
+- [X] T061 Manual testing: Validation timing across all forms (follow quickstart.md test scenarios)
+- [X] T062 Manual testing: Mobile responsive layout at 768px breakpoint (follow quickstart.md test scenarios)
+- [X] T063 Manual testing: Scroll behavior on mobile devices (follow quickstart.md test scenarios)
+- [X] T064 Run TypeScript type checking: npm run type-check
+- [X] T065 Run Lighthouse audit: verify Performance score 90+ and Accessibility score 90+
+- [X] T066 Verify WCAG 2.1 AA compliance using jest-axe or manual audit
+- [X] T067 Update .github/copilot-instructions.md if any new patterns emerged (optional)
 
 ---
 
