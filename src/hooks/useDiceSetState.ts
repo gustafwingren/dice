@@ -97,7 +97,7 @@ export function useDiceSetState(
     }
 
     return validationErrors;
-  }, [CONSTANTS.MIN_DICE_PER_SET, CONSTANTS.MAX_DICE_PER_SET, CONSTANTS.MAX_NAME_LENGTH]);
+  }, []);
 
   // Update errors whenever dice set or dice change
   const updateValidation = useCallback((newSet: DiceSet, newDice: Die[]) => {

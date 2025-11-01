@@ -109,7 +109,7 @@ export function FaceList({
           Die Faces ({faces.length})
           {faces.length > 50 && (
             <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400 ml-2">
-              (showing {Math.min(visibleFaceCount, faces.length)} of {faces.length})
+              (Showing {Math.min(visibleFaceCount, faces.length)} of {faces.length})
             </span>
           )}
         </h2>

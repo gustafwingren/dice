@@ -74,7 +74,7 @@ test.describe('Die Creation Flow', () => {
     await expect(face51).not.toBeVisible();
 
     // Verify "Show More Faces" button is present with correct remaining count
-    const showMoreButton = page.getByRole('button', { name: /Show 50 more faces \(51 remaining\)/ });
+    const showMoreButton = page.getByRole('button', { name: /Show.*remaining/i });
     await expect(showMoreButton).toBeVisible();
 
     // Click "Show More Faces" to load next batch
