@@ -153,6 +153,9 @@ export function DieEditor({
             error={
               shouldShowError('name')
                 ? errors.find((e) =>
+                    // TODO: Enhance validation system to return structured errors with field names
+                    // (e.g., { field: 'name', message: '...' }) to enable more reliable error-to-field mapping
+                    // without string searching. Current implementation uses string matching as a workaround.
                     typeof e === 'string'
                       ? e.toLowerCase().includes('name')
                       : false

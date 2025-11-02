@@ -90,6 +90,8 @@ export function LibraryCard({
           </div>
           <button
             onClick={handleDelete}
+            // Touch target: 44x44px minimum (WCAG AA compliant)
+            // Padding p-2 (8px) is applied inside the min-size constraints for icon centering
             className="p-2 min-w-11 min-h-11 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0 flex items-center justify-center"
             aria-label={`Delete ${title}`}
             tabIndex={0}

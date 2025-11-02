@@ -19,6 +19,9 @@ export interface FaceListProps {
   errors?: Record<number, string>;
 }
 
+// T045-T046: Progressive loading increment for large face lists
+const INITIAL_VISIBLE_FACES = 50;
+
 /**
  * FaceList component displays all faces with natural scrolling
  * 
@@ -38,10 +41,10 @@ export function FaceList({
   const [isApplyingBatch, setIsApplyingBatch] = useState(false);
   
   // T045-T046: Progressive loading for large face lists (similar to DiceLibrary)
-  const [visibleFaceCount, setVisibleFaceCount] = useState(50);
+  const [visibleFaceCount, setVisibleFaceCount] = useState(INITIAL_VISIBLE_FACES);
   
   const handleShowMoreFaces = () => {
-    setVisibleFaceCount(prev => prev + 50);
+    setVisibleFaceCount(prev => prev + INITIAL_VISIBLE_FACES);
   };
   
   // Check if batch operations are available (text or number types with empty faces)
@@ -107,7 +110,7 @@ export function FaceList({
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Die Faces ({faces.length})
-          {faces.length > 50 && (
+          {faces.length > INITIAL_VISIBLE_FACES && (
             <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400 ml-2">
               (Showing {Math.min(visibleFaceCount, faces.length)} of {faces.length})
             </span>
@@ -146,7 +149,7 @@ export function FaceList({
             {faces[0].contentType === 'text' && (
               <li><strong>Clear All:</strong> Removes all face values to start fresh</li>
             )}
-            {faces.length > 50 && (
+            {faces.length > INITIAL_VISIBLE_FACES && (
               <li><strong>Show More:</strong> Use the button below to load more faces as needed</li>
             )}
             <li>Great for large dice - saves time!</li>
@@ -179,7 +182,7 @@ export function FaceList({
           <Button
             onClick={handleShowMoreFaces}
             variant="secondary"
-            aria-label={`Show 50 more faces (${faces.length - visibleFaceCount} remaining)`}
+            aria-label={`Show ${INITIAL_VISIBLE_FACES} more faces (${faces.length - visibleFaceCount} remaining)`}
           >
             Show More Faces ({faces.length - visibleFaceCount} remaining)
           </Button>
