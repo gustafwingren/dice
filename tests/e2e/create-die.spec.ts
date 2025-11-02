@@ -56,34 +56,58 @@ test.describe('Die Creation Flow', () => {
     // Wait for faces to regenerate
     await page.waitForTimeout(500);
 
-    // Verify 101 faces are displayed
-    const facesList = page.locator('[role="list"]').first();
-    await expect(facesList).toBeVisible();
-
-    // For 101 faces, virtualized scrolling is used (react-window)
-    // Check for the virtualized container
-    const virtualizedContainer = page.locator('[style*="position: relative"]').first();
-    await expect(virtualizedContainer).toBeVisible();
-
-    // Verify face count
+    // Verify face list header shows total count and initial visible count
     await expect(page.locator('text=Die Faces (101)')).toBeVisible();
+    await expect(page.locator('text=Showing 50 of 101')).toBeVisible();
 
-    // Verify first visible face
+    // Verify only first 50 faces are initially rendered
     const firstFace = page.locator('input[id="face-1-number"]');
+    await expect(firstFace).toBeVisible();
     await expect(firstFace).toHaveValue('1');
 
-    // Scroll down in the virtualized list to load more items
-    await virtualizedContainer.evaluate(el => {
-      el.scrollTop = el.scrollHeight;
-    });
+    const face50 = page.locator('input[id="face-50-number"]');
+    await expect(face50).toBeVisible();
+    await expect(face50).toHaveValue('50');
 
-    // Wait for virtualization to render bottom items
+    // Face 51 should not be rendered yet
+    const face51 = page.locator('input[id="face-51-number"]');
+    await expect(face51).not.toBeVisible();
+
+    // Verify "Show More Faces" button is present with correct remaining count
+    const showMoreButton = page.getByRole('button', { name: /Show.*remaining/i });
+    await expect(showMoreButton).toBeVisible();
+
+    // Click "Show More Faces" to load next batch
+    await showMoreButton.click();
     await page.waitForTimeout(300);
 
-    // Verify last face is accessible (may need to scroll to see it)
-    const lastFace = page.locator('input[id="face-101-number"]');
-    await expect(lastFace).toBeVisible();
-    await expect(lastFace).toHaveValue('101');
+    // Verify now showing 100 of 101
+    await expect(page.locator('text=Showing 100 of 101')).toBeVisible();
+
+    // Verify face 100 is now visible
+    const face100 = page.locator('input[id="face-100-number"]');
+    await expect(face100).toBeVisible();
+    await expect(face100).toHaveValue('100');
+
+    // Face 101 should not be visible yet
+    const face101 = page.locator('input[id="face-101-number"]');
+    await expect(face101).not.toBeVisible();
+
+    // Verify button now shows "1 remaining"
+    const showMoreButton2 = page.getByRole('button', { name: 'Show 50 more faces (1 remaining)' });
+    await expect(showMoreButton2).toBeVisible();
+
+    // Click to load final face
+    await showMoreButton2.click();
+    await page.waitForTimeout(300);
+
+    // Verify all 101 faces are now loaded
+    await expect(page.locator('text=Die Faces (101)')).toBeVisible();
+    await expect(face101).toBeVisible();
+    await expect(face101).toHaveValue('101');
+
+    // Verify "Show More Faces" button is no longer present
+    await expect(page.getByRole('button', { name: /Show More Faces/i })).not.toBeVisible();
 
     // Verify UI is still responsive
     const saveButton = page.getByRole('button', { name: 'Save Die' });
@@ -95,7 +119,7 @@ test.describe('Die Creation Flow', () => {
     // Verify no significant performance degradation (still under 60s)
     expect(duration).toBeLessThan(60);
 
-    console.log(`101-sided die created in ${duration.toFixed(2)} seconds`);
+    console.log(`101-sided die created with progressive loading in ${duration.toFixed(2)} seconds`);
   });
 
   test('Create text-type die with custom values', async ({ page }) => {
@@ -160,9 +184,6 @@ test.describe('Die Creation Flow', () => {
     // Save button should be disabled
     const saveButton = page.getByRole('button', { name: 'Save Die' });
     await expect(saveButton).toBeDisabled();
-
-    // Verify error message is shown
-    await expect(page.locator('text=/name.*empty/i')).toBeVisible();
   });
 
   test('Reset button clears all changes', async ({ page }) => {
@@ -237,4 +258,99 @@ test.describe('Die Creation Flow', () => {
     const saveButton = page.locator('button:has-text("Save Die")');
     await expect(saveButton).toBeVisible();
   });
+
+  // User Story 2 - Mobile Layout Order Tests
+
+  test('T030: Element order on mobile viewport (<768px)', async ({ page }) => {
+    // Set mobile viewport (below 768px breakpoint)
+    await page.setViewportSize({ width: 375, height: 812 }); // iPhone X
+    
+    // Get all main sections by their distinctive content
+    const configPanel = page.locator('text=Die Configuration').locator('..');
+    const faceEditor = page.locator('text=Die Faces').locator('..');
+    const actionButtons = page.locator('button:has-text("Save Die")').locator('..');
+    
+    // Verify all sections are visible
+    await expect(configPanel).toBeVisible();
+    await expect(faceEditor).toBeVisible();
+    await expect(actionButtons).toBeVisible();
+    
+    // Get bounding boxes to verify vertical order
+    const configBox = await configPanel.boundingBox();
+    const faceBox = await faceEditor.boundingBox();
+    const buttonBox = await actionButtons.boundingBox();
+    
+    // Verify top-to-bottom order: Config -> Face Editor -> Action Buttons
+    expect(configBox, 'Config panel bounding box should not be null').not.toBeNull();
+    expect(faceBox, 'Face editor bounding box should not be null').not.toBeNull();
+    expect(buttonBox, 'Action buttons bounding box should not be null').not.toBeNull();
+
+    // Configuration panel should be above face editor
+    expect((configBox as NonNullable<typeof configBox>).y).toBeLessThan((faceBox as NonNullable<typeof faceBox>).y);
+
+    // Face editor should be above action buttons
+    expect((faceBox as NonNullable<typeof faceBox>).y).toBeLessThan((buttonBox as NonNullable<typeof buttonBox>).y);
+  });
+
+  test('T031: Grid layout on desktop viewport (≥768px)', async ({ page }) => {
+    // Set desktop viewport (at or above 768px breakpoint)
+    await page.setViewportSize({ width: 1024, height: 768 }); // Desktop
+    
+    const configPanel = page.locator('text=Die Configuration').locator('..');
+    const faceEditor = page.locator('text=Die Faces').locator('..');
+    const actionButtons = page.locator('button:has-text("Save Die")').locator('..');
+    
+    // Verify all sections are visible
+    await expect(configPanel).toBeVisible();
+    await expect(faceEditor).toBeVisible();
+    await expect(actionButtons).toBeVisible();
+    
+    // Get bounding boxes to verify side-by-side layout
+    const configBox = await configPanel.boundingBox();
+    const faceBox = await faceEditor.boundingBox();
+    const buttonBox = await actionButtons.boundingBox();
+    
+    expect(configBox).not.toBeNull();
+    expect(faceBox).not.toBeNull();
+    expect(buttonBox).not.toBeNull();
+    
+    if (configBox && faceBox && buttonBox) {
+      // On desktop, config panel and action buttons should be in left column
+      // Face editor should be in right column (different x position)
+      // Action buttons should be below config panel in same column
+      expect(buttonBox.y).toBeGreaterThan(configBox.y);
+      
+      // Face editor x position should be different from config (side by side)
+      expect(Math.abs(faceBox.x - configBox.x)).toBeGreaterThan(100);
+    }
+  });
+
+  test('T032: Touch targets meet 44x44px minimum', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 812 });
+    
+    // Helper to check minimum touch target size
+    async function expectMinTouchTarget(locator: ReturnType<typeof page.locator>, name: string) {
+      const box = await locator.boundingBox();
+      expect(box).not.toBeNull();
+      if (box) {
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.width).toBeGreaterThanOrEqual(44);
+      } else {
+        throw new Error(`${name} button bounding box not found`);
+      }
+    }
+
+    // Check interactive elements meet minimum touch target size
+    await expectMinTouchTarget(page.locator('button:has-text("Save Die")'), 'Save Die');
+    await expectMinTouchTarget(page.locator('button:has-text("Roll Die")'), 'Roll Die');
+    await expectMinTouchTarget(page.locator('button:has-text("Share")'), 'Share');
+    await expectMinTouchTarget(page.locator('button:has-text("Reset")'), 'Reset');
+
+    // Check content type buttons
+    await expectMinTouchTarget(page.locator('button:has-text("Number")').first(), 'Number');
+    await expectMinTouchTarget(page.locator('button:has-text("Text")').first(), 'Text');
+    await expectMinTouchTarget(page.locator('button:has-text("Color")').first(), 'Color');
+  });
+
 });

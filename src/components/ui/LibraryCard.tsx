@@ -63,6 +63,7 @@ export function LibraryCard({
 
   return (
     <div
+      role="article"
       className={`
         bg-white dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-xl dark:shadow-neutral-900 
         transition-all duration-300 cursor-pointer overflow-hidden 
@@ -89,7 +90,9 @@ export function LibraryCard({
           </div>
           <button
             onClick={handleDelete}
-            className="p-2 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0"
+            // Touch target: 44x44px minimum (WCAG AA compliant)
+            // Padding p-2 (8px) is applied inside the min-size constraints for icon centering
+            className="p-2 min-w-11 min-h-11 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0 flex items-center justify-center"
             aria-label={`Delete ${title}`}
             tabIndex={0}
           >

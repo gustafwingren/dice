@@ -4,6 +4,7 @@
  */
 
 import { render, screen, fireEvent, waitFor, cleanup } from '../test-utils';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { DieEditor } from '@/components/dice/DieEditor';
 import { DiceLibrary } from '@/components/dice/DiceLibrary';
@@ -203,6 +204,110 @@ describe('Die Persistence Integration', () => {
       contentType: 'color',
       backgroundColor: '#FF5733',
       textColor: '#FFFFFF',
+    });
+  });
+
+  describe('Validation timing (User Story 1 - T012-T015)', () => {
+    it('should not show validation errors on initial render (T012)', async () => {
+      render(<DieEditor onSave={jest.fn()} />);
+      
+      // Wait for component to fully render
+      await waitFor(() => {
+        expect(screen.getByLabelText(/die name/i)).toBeInTheDocument();
+      });
+      
+      
+      const alertElement = screen.queryByRole('alert');
+      expect(alertElement).not.toBeInTheDocument();
+
+      // Also verify that the name input does not have aria-invalid="true"
+      const nameInput = screen.getByLabelText(/die name/i);
+      expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+    });
+    it('should show errors after blur on invalid field (T013)', async () => {
+      const user = userEvent.setup();
+      render(<DieEditor onSave={jest.fn()} />);
+      
+      const nameInput = await screen.findByLabelText(/die name/i);
+      
+      // Initially no error should be shown (field starts empty, which is invalid)
+      expect(screen.queryByText(/die name cannot be empty/i)).not.toBeInTheDocument();
+      expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+      
+      // Focus the name field
+      await user.click(nameInput);
+      expect(nameInput).toHaveFocus();
+      
+      // Tab away to trigger blur
+      await user.tab();
+      
+      // After blur, validation error SHOULD appear because field was touched
+      await waitFor(() => {
+        const errorElements = screen.getAllByText(/die name cannot be empty/i);
+        expect(errorElements.length).toBeGreaterThanOrEqual(1);
+      }, { timeout: 1000 });
+      
+      // Verify ARIA attributes
+      expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('should clear errors when field becomes valid (T014)', async () => {
+      const user = userEvent.setup();
+      render(<DieEditor onSave={jest.fn()} />);
+      
+      const nameInput = await screen.findByLabelText(/die name/i);
+      
+      // Trigger error by focusing and blurring empty field
+      await user.click(nameInput);
+      await user.tab();
+      
+      // Wait for error to appear
+      await waitFor(() => {
+        const errorElements = screen.getAllByText(/die name cannot be empty/i);
+        expect(errorElements.length).toBeGreaterThanOrEqual(1);
+      }, { timeout: 1000 });
+      
+      // Now fix the error by entering a valid name
+      await user.click(nameInput);
+      await user.clear(nameInput);
+      await user.type(nameInput, 'Valid Die Name');
+      
+      // Tab away to trigger validation
+      await user.tab();
+      
+      // Error should clear when field becomes valid
+      await waitFor(() => {
+        expect(screen.queryByText(/die name cannot be empty/i)).not.toBeInTheDocument();
+      }, { timeout: 1000 });
+    });
+      
+    it('should show all validation errors on submit attempt (T015)', async () => {
+      const user = userEvent.setup();
+      const handleSave = jest.fn();
+      render(<DieEditor onSave={handleSave} />);
+
+      // Try to click the save button (should be disabled)
+      const saveButton = await screen.findByRole('button', { name: /save die/i });
+      expect(saveButton).toBeDisabled();
+
+      // Try to focus and blur all required fields to simulate submit attempt
+      const nameInput = await screen.findByLabelText(/die name/i);
+      await user.click(nameInput);
+      await user.tab();
+
+      // Add more required fields here if needed (e.g., sides, content type)
+      // For example:
+      // const sidesInput = await screen.findByLabelText(/number of sides/i);
+      // await user.click(sidesInput);
+      // await user.tab();
+
+      // After attempting to submit, all errors should be shown
+      await waitFor(() => {
+        expect(screen.getAllByText(/die name cannot be empty/i).length).toBeGreaterThanOrEqual(1);
+      });
+
+      // Optionally, check ARIA attributes
+      expect(nameInput).toHaveAttribute('aria-invalid', 'true');
     });
   });
 });

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useDiceStorage } from '@/hooks/useDiceStorage';
 import { DiceLibraryCard } from './DiceLibraryCard';
 import { DiceSetCard } from './DiceSetCard';
@@ -10,6 +11,7 @@ import { EmptyState, DiceIllustration } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { WarningIcon } from '@/components/icons';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/Button';
 
 export interface DiceLibraryProps {
   /** Called when a die is selected to load */
@@ -28,11 +30,25 @@ export interface DiceLibraryProps {
  * - Empty state
  * - Error handling
  * - Delete functionality
+ * - Progressive loading (shows 50 items at a time)
  */
 export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
   const router = useRouter();
   const { dice, diceSets, isLoading, error, deleteDie, deleteDiceSet } = useDiceStorage();
   const { showToast } = useToast();
+  
+  // T045, T046: Progressive loading state
+  const [visibleDiceCount, setVisibleDiceCount] = useState(50);
+  const [visibleSetsCount, setVisibleSetsCount] = useState(50);
+  
+  // T049, T050: Handlers to show more items
+  const handleShowMoreDice = () => {
+    setVisibleDiceCount(prev => prev + 50);
+  };
+  
+  const handleShowMoreSets = () => {
+    setVisibleSetsCount(prev => prev + 50);
+  };
   
   const handleLoadDie = (die: Die) => {
     if (onLoadDie) {
@@ -156,8 +172,10 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
             Dice Sets
             <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">({diceSets.length})</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {diceSets.map((diceSet) => {
+          {/* T053: Verify responsive grid layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* T048: Slice logic to show first visibleSetsCount items */}
+            {diceSets.slice(0, visibleSetsCount).map((diceSet) => {
               // Get the Die objects for this set
               const setDice = diceSet.diceIds
                 .map((id) => dice.find((d) => d.id === id))
@@ -174,6 +192,18 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
               );
             })}
           </div>
+          {/* T050, T051, T052: Show More Sets button */}
+          {diceSets.length > visibleSetsCount && (
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={handleShowMoreSets}
+                variant="secondary"
+                aria-label={`Show 50 more dice sets (${diceSets.length - visibleSetsCount} remaining)`}
+              >
+                Show More Sets ({diceSets.length - visibleSetsCount} remaining)
+              </Button>
+            </div>
+          )}
         </section>
       )}
       
@@ -185,8 +215,10 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
             Individual Dice
             <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">({dice.length})</span>
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {dice.map((die) => (
+          {/* T053: Verify responsive grid layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* T047: Slice logic to show first visibleDiceCount items */}
+            {dice.slice(0, visibleDiceCount).map((die) => (
               <DiceLibraryCard
                 key={die.id}
                 die={die}
@@ -195,6 +227,18 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
               />
             ))}
           </div>
+          {/* T049, T051, T052: Show More Dice button */}
+          {dice.length > visibleDiceCount && (
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={handleShowMoreDice}
+                variant="secondary"
+                aria-label={`Show 50 more dice (${dice.length - visibleDiceCount} remaining)`}
+              >
+                Show More Dice ({dice.length - visibleDiceCount} remaining)
+              </Button>
+            </div>
+          )}
         </section>
       )}
     </div>

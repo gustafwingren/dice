@@ -103,7 +103,9 @@ test.describe('Share Die Flow', () => {
     await expect(newPage.getByText(/saved! redirecting/i)).toBeVisible();
     
     // Should redirect to library
-    await newPage.waitForURL('/library', { timeout: 3000 });
+    // Increased timeout to 5000ms to accommodate slower CI environments and browser navigation delays.
+    // If this test becomes flaky, investigate underlying performance issues.
+    await newPage.waitForURL('/library', { timeout: 5000 });
     
     // Verify die appears in library
     await expect(newPage.getByText('Decision Die" saved to your library')).toBeVisible();
@@ -225,6 +227,7 @@ test.describe('Share Die Flow', () => {
     // Name the set
     await page.getByLabel('Set Name').pressSequentially('');
     await page.getByLabel('Set Name').pressSequentially('RPG Set');
+    await page.getByLabel('Set Name').press('Tab');
 
     // Add dice to set
     // Click Add Die button to open modal

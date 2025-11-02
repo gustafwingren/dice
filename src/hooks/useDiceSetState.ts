@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Die, DiceSet } from '@/types';
+import { Die, DiceSet, FormValidationState, createFormValidationState } from '@/types';
 import { 
   createEmptyDiceSet, 
   addDieToSet, 
@@ -18,12 +18,18 @@ export interface UseDiceSetStateReturn {
   dice: Die[];
   errors: string[];
   isValid: boolean;
+  validationState: FormValidationState;
   
   // Dice set operations
   updateSetName: (name: string) => void;
   addDie: (die: Die) => void;
   removeDie: (dieId: string) => void;
   reorderDice: (fromIndex: number, toIndex: number) => void;
+  
+  // Validation methods
+  markFieldTouched: (fieldName: string) => void;
+  shouldShowError: (fieldName: string) => boolean;
+  attemptSubmit: () => boolean;
   
   // Utility actions
   reset: () => void;
@@ -47,6 +53,9 @@ export function useDiceSetState(
   );
   const [dice, setDice] = useState<Die[]>(() => initialDice || []);
   const [errors, setErrors] = useState<string[]>([]);
+  const [validationState, setValidationState] = useState<FormValidationState>(
+    () => createFormValidationState()
+  );
 
   // Update state when initial props change (for loading from library)
   useEffect(() => {
@@ -170,15 +179,40 @@ export function useDiceSetState(
   // Is valid?
   const isValid = errors.length === 0 && diceSet.diceIds.length >= CONSTANTS.MIN_DICE_PER_SET;
 
+  // T009: Mark a field as touched (called on blur)
+  const markFieldTouched = useCallback((fieldName: string) => {
+    setValidationState(prev => ({
+      ...prev,
+      touchedFields: new Set(prev.touchedFields).add(fieldName)
+    }));
+  }, []);
+
+  // T010: Check if validation error should be shown for a field
+  const shouldShowError = useCallback((fieldName: string): boolean => {
+    return validationState.touchedFields.has(fieldName) || 
+           validationState.submitAttempted;
+  }, [validationState]);
+
+  // T011: Attempt form submission and mark all fields as needing validation
+  const attemptSubmit = useCallback((): boolean => {
+    setValidationState(prev => ({ ...prev, submitAttempted: true }));
+    const validationErrors = validateDiceSet(diceSet, dice);
+    return validationErrors.length === 0 && diceSet.diceIds.length >= CONSTANTS.MIN_DICE_PER_SET;
+  }, [diceSet, dice, validateDiceSet]);
+
   return {
     diceSet,
     dice,
     errors,
     isValid,
+    validationState,
     updateSetName,
     addDie,
     removeDie,
     reorderDice,
+    markFieldTouched,
+    shouldShowError,
+    attemptSubmit,
     reset,
     loadDiceSet,
     canAddMoreDice,

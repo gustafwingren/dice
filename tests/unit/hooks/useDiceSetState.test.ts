@@ -406,4 +406,113 @@ describe('useDiceSetState', () => {
       }
     });
   });
+
+  describe('validation state management (T019)', () => {
+    it('should initialize with empty touched fields and no submit attempt', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      expect(result.current.validationState.touchedFields.size).toBe(0);
+      expect(result.current.validationState.submitAttempted).toBe(false);
+    });
+
+    it('should mark field as touched when markFieldTouched is called', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      act(() => {
+        result.current.markFieldTouched('setName');
+      });
+      
+      expect(result.current.validationState.touchedFields.has('setName')).toBe(true);
+      expect(result.current.validationState.touchedFields.size).toBe(1);
+    });
+
+    it('should mark multiple fields as touched independently', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      act(() => {
+        result.current.markFieldTouched('setName');
+        result.current.markFieldTouched('diceSelection');
+      });
+      
+      expect(result.current.validationState.touchedFields.has('setName')).toBe(true);
+      expect(result.current.validationState.touchedFields.has('diceSelection')).toBe(true);
+      expect(result.current.validationState.touchedFields.size).toBe(2);
+    });
+
+    it('should not show error for untouched field even if invalid', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      // Default dice set has no dice (invalid) but field is not touched
+      expect(result.current.isValid).toBe(false);
+      expect(result.current.shouldShowError('diceSelection')).toBe(false);
+    });
+
+    it('should show error for touched field if invalid', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      act(() => {
+        result.current.markFieldTouched('diceSelection');
+      });
+      
+      // Dice set is still invalid (no dice), but now touched
+      expect(result.current.shouldShowError('diceSelection')).toBe(true);
+    });
+
+    it('should show errors on all fields after submit attempt', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      act(() => {
+        result.current.attemptSubmit();
+      });
+      
+      expect(result.current.validationState.submitAttempted).toBe(true);
+      expect(result.current.shouldShowError('setName')).toBe(true);
+      expect(result.current.shouldShowError('diceSelection')).toBe(true);
+      expect(result.current.shouldShowError('anyField')).toBe(true);
+    });
+
+    it('should return false from attemptSubmit when dice set is invalid', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      let submitResult: boolean = true;
+      act(() => {
+        submitResult = result.current.attemptSubmit();
+      });
+      
+      expect(submitResult).toBe(false);
+      expect(result.current.isValid).toBe(false);
+    });
+
+    it('should return true from attemptSubmit when dice set is valid', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      const die = createDie('Test Die', 6, 'number');
+      
+      act(() => {
+        result.current.addDie(die);
+      });
+      
+      let submitResult: boolean = false;
+      act(() => {
+        submitResult = result.current.attemptSubmit();
+      });
+      
+      expect(submitResult).toBe(true);
+      expect(result.current.isValid).toBe(true);
+    });
+
+    it('should persist touched state across updates', () => {
+      const { result } = renderHook(() => useDiceSetState());
+      
+      act(() => {
+        result.current.markFieldTouched('setName');
+      });
+      
+      act(() => {
+        result.current.updateSetName('My Set');
+      });
+      
+      // Touched state should persist after dice set update
+      expect(result.current.validationState.touchedFields.has('setName')).toBe(true);
+    });
+  });
 });

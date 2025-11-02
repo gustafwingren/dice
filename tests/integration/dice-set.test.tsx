@@ -227,6 +227,87 @@ describe('Dice Set Integration', () => {
     });
   });
 
+  describe('Validation timing (User Story 1 - T016-T017)', () => {
+    it('should not show validation errors on initial render (T016)', async () => {
+      storage.loadDice.mockResolvedValue([]);
+      storage.loadDiceSets.mockResolvedValue([]);
+      
+      render(<DiceSetEditor />);
+      
+      // Wait for component to load
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        expect(inputs.length).toBeGreaterThan(0);
+      });
+      
+      const nameInput = screen.getByRole('textbox', { name: /set name/i });
+      expect(nameInput).toBeInTheDocument();
+      
+      // Verify NO validation errors appear on initial render
+      // Even though the dice set is invalid (empty, no dice), errors should not show
+      // until user interacts with the form
+      const errorText = screen.queryByText(/must contain at least 1 die/i);
+      expect(errorText).not.toBeInTheDocument();
+      
+      // Verify the Input component's error prop is not showing an error
+      expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('should show errors after blur on input field (T017)', async () => {
+      const user = userEvent.setup();
+      
+      // Load one die so we can add it and then remove it to trigger validation
+      const mockDie = {
+        id: 'die-1',
+        name: 'Test Die',
+        sides: 6,
+        contentType: 'number' as const,
+        backgroundColor: '#FFFFFF',
+        textColor: '#000000',
+        faces: Array(6).fill(0).map((_, i) => ({
+          id: i + 1,
+          value: String(i + 1),
+          contentType: 'number' as const,
+        })),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      storage.loadDice.mockResolvedValue([mockDie]);
+      storage.loadDiceSets.mockResolvedValue([]);
+      
+      render(<DiceSetEditor />);
+      
+      // Wait for loading
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        expect(inputs.length).toBeGreaterThan(0);
+      });
+      
+      const nameInput = screen.getByRole('textbox', { name: /set name/i });
+      
+      // Initially no errors should be shown
+      expect(screen.queryByText(/must contain at least 1 die/i)).not.toBeInTheDocument();
+      expect(nameInput).not.toHaveAttribute('aria-invalid', 'true');
+      
+      // Focus and modify the input to trigger interaction
+      await user.click(nameInput);
+      await user.clear(nameInput);
+      await user.type(nameInput, 'Test Set');
+      
+      // Find and click a button to blur the input
+      const addDieButton = await screen.findByRole('button', { name: /add die/i });
+      await user.click(addDieButton);
+      
+      // After interaction, validation errors SHOULD appear because field was touched
+      // and the set has no dice (invalid state)
+      await waitFor(() => {
+        const errorElements = screen.getAllByText(/must contain at least 1 die/i);
+        expect(errorElements.length).toBeGreaterThanOrEqual(1);
+      }, { timeout: 1000 });
+    });
+  });
+
   describe('Deleting a dice set', () => {
     it('should delete a dice set without deleting individual dice', async () => {
       const mockDie1 = {
