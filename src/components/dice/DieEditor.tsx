@@ -69,7 +69,7 @@ export function DieEditor({
     reset,
   } = useDieState(initialDie);
   
-  const { saveDie } = useDiceStorage();
+  const { saveDie, duplicateDie } = useDiceStorage();
   const { generateDieLink, error: shareError } = useShareLink();
   const { rollState, rollResult, roll, reset: resetRoll, isRolling } = useRollDice();
   const { showToast } = useToast();
@@ -108,6 +108,20 @@ export function DieEditor({
     reset();
     if (onReset) {
       onReset();
+    }
+  };
+
+  const handleDuplicate = async () => {
+    if (!initialDie?.id) return;
+    
+    try {
+      const duplicated = await duplicateDie(initialDie.id);
+      if (duplicated) {
+        showToast(`Die "${duplicated.name}" created successfully!`, 'success');
+      }
+    } catch (error) {
+      console.error('Failed to duplicate die:', error);
+      showToast('Failed to duplicate die. Please try again.', 'error');
     }
   };
 
@@ -184,27 +198,79 @@ export function DieEditor({
 
         {/* Main layout: Config Panel + Face List */}
         {/* T033-T037: Mobile-responsive layout with reordered elements */}
-        {/* Mobile (<768px): flex column with face editor before buttons */}
-        {/* Desktop (≥768px): grid layout with buttons in left column */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:auto-rows-min gap-6">
-          {/* T034: Configuration section - order: 1 on mobile, left column row 1 on desktop */}
-          <div className="order-1 lg:row-start-1 lg:col-span-1 lg:row-span-1">
-            <DieConfigPanel
-              sides={die.sides}
-              backgroundColor={die.backgroundColor}
-              textColor={die.textColor}
-              contentType={die.contentType}
-              onSidesChange={updateSides}
-              onBackgroundColorChange={updateBackgroundColor}
-              onTextColorChange={updateTextColor}
-              onContentTypeChange={updateContentType}
-            />
+        {/* Mobile (<768px): DieConfigPanel -> FaceList -> Buttons */}
+        {/* Desktop (≥768px): Left column (DieConfigPanel + Buttons) | Right column (FaceList) */}
+        <div className="flex flex-col gap-6 lg:flex-row">
+          {/* Left column wrapper - only groups items on desktop */}
+          {/* On mobile: uses 'contents' to make children direct flex items so order works */}
+          {/* On desktop: becomes a flex column container */}
+          <div className="contents lg:flex lg:flex-col lg:gap-6 lg:w-1/2">
+            {/* T034: Configuration section - order: 1 on mobile */}
+            <div className="order-1">
+              <DieConfigPanel
+                sides={die.sides}
+                backgroundColor={die.backgroundColor}
+                textColor={die.textColor}
+                contentType={die.contentType}
+                onSidesChange={updateSides}
+                onBackgroundColorChange={updateBackgroundColor}
+                onTextColorChange={updateTextColor}
+                onContentTypeChange={updateContentType}
+              />
+            </div>
+
+            {/* T036: Action buttons - order: 3 on mobile (after face list) */}
+            {/* On desktop: directly after config panel in left column */}
+            <div className="order-3 lg:order-2 space-y-3">
+              {rollState !== 'complete' && (
+                <Button
+                  onClick={handleRoll}
+                  variant="primary"
+                  disabled={!isValid || isRolling}
+                  className="w-full"
+                >
+                  {isRolling ? 'Rolling...' : 'Roll Die'}
+                </Button>
+              )}
+              <Button
+                onClick={handleSaveClick}
+                variant="primary"
+                disabled={!isValid}
+                className="w-full"
+              >
+                Save Die
+              </Button>
+              <Button
+                onClick={handleShare}
+                variant="secondary"
+                disabled={!isValid}
+                className="w-full"
+              >
+                Share
+              </Button>
+              {initialDie?.id && (
+                <Button
+                  onClick={handleDuplicate}
+                  variant="secondary"
+                  disabled={!isValid}
+                  className="w-full"
+                >
+                  Duplicate
+                </Button>
+              )}
+              <Button
+                onClick={handleReset}
+                variant="secondary"
+                className="w-full"
+              >
+                Reset
+              </Button>
+            </div>
           </div>
 
-          {/* T035: Face List or Roll Result - order: 2 on mobile (appears before buttons) */}
-          {/* On mobile: appears between config and buttons */}
-          {/* On desktop: right column, spans both rows */}
-          <div className="order-2 lg:order-0 lg:col-span-1 lg:row-span-2">
+          {/* T035: Face List or Roll Result - order: 2 on mobile (between config and buttons) */}
+          {/* On desktop: right column, takes remaining space */}
+          <div className="order-2 lg:flex-1">
             {rollState === 'rolling' && (
               <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-md dark:shadow-neutral-900">
                 <RollAnimation isRolling={true} />
@@ -232,48 +298,11 @@ export function DieEditor({
                   faces={die.faces}
                   onUpdateFace={updateFace}
                   onBatchUpdate={handleBatchUpdate}
+                  onSidesChange={updateSides}
+                  currentSides={die.sides}
                 />
               </div>
             )}
-          </div>
-
-          {/* T036: Action buttons - order: 3 on mobile (appears last) */}
-          {/* On mobile: appears after face editor */}
-          {/* On desktop: left column row 2, below config panel */}
-          <div className="order-3 lg:order-0 lg:col-span-1 lg:row-span-1 space-y-3">
-            {rollState !== 'complete' && (
-              <Button
-                onClick={handleRoll}
-                variant="primary"
-                disabled={!isValid || isRolling}
-                className="w-full"
-              >
-                {isRolling ? 'Rolling...' : 'Roll Die'}
-              </Button>
-            )}
-            <Button
-              onClick={handleSaveClick}
-              variant="primary"
-              disabled={!isValid}
-              className="w-full"
-            >
-              Save Die
-            </Button>
-            <Button
-              onClick={handleShare}
-              variant="secondary"
-              disabled={!isValid}
-              className="w-full"
-            >
-              Share
-            </Button>
-            <Button
-              onClick={handleReset}
-              variant="secondary"
-              className="w-full"
-            >
-              Reset
-            </Button>
           </div>
         </div>
 

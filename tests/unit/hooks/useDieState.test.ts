@@ -5,6 +5,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useDieState } from '@/hooks/useDieState';
 import { createEmptyDie } from '@/lib/die-factory';
+import { Die } from '@/types';
 
 describe('useDieState', () => {
   describe('initialization', () => {
@@ -85,19 +86,91 @@ describe('useDieState', () => {
       expect(result.current.die.sides).toBe(101); // MAX_SIDES
     });
 
-    it('should regenerate faces when sides change', () => {
+    it('should preserve existing face data when increasing sides', () => {
       const { result } = renderHook(() => useDieState());
       
       act(() => {
         result.current.updateFace(1, { value: 'custom' });
+        result.current.updateFace(2, { value: 'data' });
       });
       
       act(() => {
-        result.current.updateSides(4);
+        result.current.updateSides(10);
       });
       
-      // Faces should be regenerated, losing custom value
-      expect(result.current.die.faces[0].value).toBe('1');
+      // First 6 faces should preserve custom values
+      expect(result.current.die.faces[0].value).toBe('custom');
+      expect(result.current.die.faces[1].value).toBe('data');
+      expect(result.current.die.faces[2].value).toBe('3'); // Unchanged
+      
+      // New faces (7-10) should have default values
+      expect(result.current.die.faces[6].value).toBe('7');
+      expect(result.current.die.faces[9].value).toBe('10');
+      expect(result.current.die.faces).toHaveLength(10);
+    });
+
+    it('should preserve existing face data when decreasing sides', () => {
+      const { result } = renderHook(() => useDieState());
+      
+      act(() => {
+        result.current.updateSides(10);
+      });
+      
+      act(() => {
+        result.current.updateFace(1, { value: 'first' });
+        result.current.updateFace(5, { value: 'fifth' });
+        result.current.updateFace(9, { value: 'ninth' });
+      });
+      
+      act(() => {
+        result.current.updateSides(5);
+      });
+      
+      // First 5 faces should be preserved
+      expect(result.current.die.faces[0].value).toBe('first');
+      expect(result.current.die.faces[4].value).toBe('fifth');
+      expect(result.current.die.faces).toHaveLength(5);
+      
+      // Faces 6-10 should be gone (including the 'ninth' customization)
+      expect(result.current.die.faces.find(f => f.value === 'ninth')).toBeUndefined();
+    });
+
+    it('should preserve text face values when changing sides', () => {
+      const { result } = renderHook(() => useDieState(createEmptyDie(6, 'text')));
+      
+      act(() => {
+        result.current.updateFace(1, { value: 'Yes' });
+        result.current.updateFace(2, { value: 'No' });
+        result.current.updateFace(3, { value: 'Maybe' });
+      });
+      
+      act(() => {
+        result.current.updateSides(8);
+      });
+      
+      expect(result.current.die.faces[0].value).toBe('Yes');
+      expect(result.current.die.faces[1].value).toBe('No');
+      expect(result.current.die.faces[2].value).toBe('Maybe');
+      expect(result.current.die.faces).toHaveLength(8);
+    });
+
+    it('should preserve color face values when changing sides', () => {
+      const { result } = renderHook(() => useDieState(createEmptyDie(6, 'color')));
+      
+      act(() => {
+        result.current.updateFace(1, { color: '#FF0000' });
+        result.current.updateFace(2, { color: '#00FF00' });
+      });
+      
+      act(() => {
+        result.current.updateSides(8);
+      });
+      
+      expect(result.current.die.faces[0].color).toBe('#FF0000');
+      expect(result.current.die.faces[1].color).toBe('#00FF00');
+      expect(result.current.die.faces).toHaveLength(8);
+      // New faces should have default colors
+      expect(result.current.die.faces[6].color).toBeDefined();
     });
   });
 
@@ -359,6 +432,72 @@ describe('useDieState', () => {
       
       // Touched state should persist after die update
       expect(result.current.validationState.touchedFields.has('name')).toBe(true);
+    });
+  });
+
+  describe('form reset on navigation (React key pattern)', () => {
+    it('should start with empty die when initialDie is undefined', () => {
+      const { result } = renderHook(() => useDieState(undefined));
+      
+      expect(result.current.die.name).toBe('');
+      expect(result.current.die.sides).toBe(6); // Default
+      expect(result.current.die.contentType).toBe('number'); // Default
+      expect(result.current.die.faces).toHaveLength(6);
+    });
+
+    it('should start with provided die when initialDie is given', () => {
+      const initialDie = createEmptyDie(8, 'text');
+      initialDie.name = 'My Die';
+      
+      const { result } = renderHook(() => useDieState(initialDie));
+      
+      expect(result.current.die.name).toBe('My Die');
+      expect(result.current.die.sides).toBe(8);
+      expect(result.current.die.contentType).toBe('text');
+    });
+
+    it('should maintain state when hook is rerendered with same initialDie', () => {
+      const initialDie = createEmptyDie();
+      initialDie.name = 'Valid Name';
+      
+      const { result, rerender } = renderHook<ReturnType<typeof useDieState>, { die?: Die }>(
+        ({ die }) => useDieState(die),
+        { initialProps: { die: initialDie } }
+      );
+      
+      // Make a change
+      act(() => {
+        result.current.updateSides(10);
+      });
+      
+      expect(result.current.die.sides).toBe(10);
+      
+      // Rerender with same initialDie - state should persist
+      rerender({ die: initialDie });
+      
+      expect(result.current.die.sides).toBe(10);
+      expect(result.current.die.name).toBe('Valid Name');
+    });
+
+    it('should load new die when initialDie changes to a different die', () => {
+      const firstDie = createEmptyDie(4, 'number');
+      firstDie.name = 'First Die';
+      
+      const { result, rerender } = renderHook<ReturnType<typeof useDieState>, { die?: Die }>(
+        ({ die }) => useDieState(die),
+        { initialProps: { die: undefined } }
+      );
+      
+      expect(result.current.die.name).toBe('');
+      expect(result.current.die.sides).toBe(6);
+      
+      // Load a die by providing initialDie
+      act(() => {
+        rerender({ die: firstDie });
+      });
+      
+      expect(result.current.die.name).toBe('First Die');
+      expect(result.current.die.sides).toBe(4);
     });
   });
 });

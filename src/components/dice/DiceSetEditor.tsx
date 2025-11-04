@@ -73,7 +73,7 @@ export function DiceSetEditor({
     loadDiceSet,
   } = useDiceSetState();
   
-  const { dice: savedDice, diceSets, saveDiceSet, isLoading: storageLoading } = useDiceStorage();
+  const { dice: savedDice, diceSets, saveDiceSet, duplicateDiceSet, isLoading: storageLoading } = useDiceStorage();
   const { generateSetLink, error: shareError } = useShareLink();
   const { rollState, rollResult, rollSet, reset: resetRoll, isRolling } = useRollDice();
   const { showToast } = useToast();
@@ -166,6 +166,23 @@ export function DiceSetEditor({
     setOriginalDiceIds(new Map()); // Clear the ID mapping
     if (onReset) {
       onReset();
+    }
+  };
+
+  const handleDuplicate = async () => {
+    const setId = searchParams.get('id');
+    if (!setId) return;
+    
+    try {
+      const duplicated = await duplicateDiceSet(setId);
+      if (duplicated) {
+        showToast(`Dice set "${duplicated.name}" created successfully!`, 'success');
+        // Navigate to edit the new set for consistency
+        router.push(`/sets/edit?id=${duplicated.id}`);
+      }
+    } catch (error) {
+      console.error('Failed to duplicate dice set:', error);
+      showToast('Failed to duplicate dice set. Please try again.', 'error');
     }
   };
 
@@ -382,6 +399,16 @@ export function DiceSetEditor({
               >
                 Share
               </Button>
+              {searchParams.get('id') && (
+                <Button
+                  onClick={handleDuplicate}
+                  variant="secondary"
+                  disabled={!isValid || dice.length === 0}
+                  className="w-full"
+                >
+                  Duplicate
+                </Button>
+              )}
               <Button
                 onClick={handleReset}
                 variant="secondary"

@@ -15,6 +15,9 @@ export interface DiceSetCardProps {
   
   /** Called when delete is requested */
   onDelete: (id: string) => void;
+  
+  /** Called when duplicate is requested */
+  onDuplicate?: (id: string) => void;
 }
 
 /**
@@ -31,6 +34,7 @@ export function DiceSetCard({
   dice,
   onClick,
   onDelete,
+  onDuplicate,
 }: DiceSetCardProps) {
   const handleClick = () => {
     onClick(diceSet);
@@ -42,6 +46,12 @@ export function DiceSetCard({
     }
   };
 
+  const handleDuplicate = () => {
+    if (onDuplicate) {
+      onDuplicate(diceSet.id);
+    }
+  };
+
   return (
     <LibraryCard
       title={diceSet.name}
@@ -49,6 +59,7 @@ export function DiceSetCard({
       createdAt={new Date(diceSet.createdAt)}
       onClick={handleClick}
       onDelete={handleDelete}
+      onDuplicate={onDuplicate ? handleDuplicate : undefined}
       ariaLabel={`Load dice set: ${diceSet.name}`}
       hoverBorderColor="accent"
     >
