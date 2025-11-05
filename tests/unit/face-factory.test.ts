@@ -46,7 +46,7 @@ describe('face-factory', () => {
       const result = adjustFacesForSideChange(existingFaces, 2, 'number');
       
       expect(result).toHaveLength(2);
-      expect(result).toStrictEqual(existingFaces); // Same reference
+      expect(result).toBe(existingFaces); // Same reference
     });
 
     it('should preserve text face values when increasing sides', () => {

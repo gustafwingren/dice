@@ -53,7 +53,6 @@ function HomeContent() {
         // No ID parameter - creating a new die
         setLoadedDie(undefined);
         setLoadedDieId(null);
-        setIsLoading(false);
       }
     };
 

@@ -167,13 +167,16 @@ export function useDiceStorage(): UseDiceStorageReturn {
       }
       
       const now = getCurrentTimestamp();
-      const newName = originalDie.name + ' (Copy)';
+      const copySuffix = ' (Copy)';
+      const maxBaseLength = MAX_NAME_LENGTH - copySuffix.length;
+      const baseName = originalDie.name.slice(0, maxBaseLength);
+      const newName = baseName + copySuffix;
       
       // Create duplicate with new ID and updated metadata
       const duplicatedDie: Die = {
         ...originalDie,
         id: generateUUID(),
-        name: newName.slice(0, MAX_NAME_LENGTH), // Truncate if needed
+        name: newName,
         createdAt: now,
         updatedAt: now,
       };
@@ -259,13 +262,16 @@ export function useDiceStorage(): UseDiceStorageReturn {
       }
       
       const now = getCurrentTimestamp();
-      const newName = originalSet.name + ' (Copy)';
+      const copySuffix = ' (Copy)';
+      const maxBaseLength = MAX_NAME_LENGTH - copySuffix.length;
+      const baseName = originalSet.name.slice(0, maxBaseLength);
+      const newName = baseName + copySuffix;
       
       // Create duplicate with new ID and updated metadata
       const duplicatedSet: DiceSet = {
         ...originalSet,
         id: generateUUID(),
-        name: newName.slice(0, MAX_NAME_LENGTH), // Truncate if needed
+        name: newName,
         createdAt: now,
         updatedAt: now,
       };

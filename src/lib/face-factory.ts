@@ -82,8 +82,8 @@ export function adjustFacesForSideChange(
     return [...existingFaces, ...newFaces];
   }
   
-  // Same number of sides, return a new array reference with the same faces
-  return existingFaces.slice(0);
+  // Same number of sides, return the original array (no unnecessary copy)
+  return existingFaces;
 }
 
 /**
