@@ -80,32 +80,33 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
     }
   }, [initialDie]);
 
-  // Validate and update errors whenever die changes
-  const validateAndUpdate = useCallback((updateFn: (prevDie: Die) => Die) => {
-    setDie((prevDie) => {
-      const newDie = updateFn(prevDie);
-      try {
-        validateDie(newDie);
-        setErrors([]);
-      } catch (error) {
-        if (error instanceof Error) {
-          setErrors([error.message]);
-        }
+  // Validate die whenever it changes and update errors
+  useEffect(() => {
+    try {
+      validateDie(die);
+      setErrors([]);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrors([error.message]);
       }
-      return newDie;
-    });
+    }
+  }, [die]);
+
+  // Update die state (validation happens via useEffect)
+  const updateDie = useCallback((updateFn: (prevDie: Die) => Die) => {
+    setDie(prevDie => updateFn(prevDie));
   }, []);
 
   const updateName = useCallback((name: string) => {
-    validateAndUpdate((prevDie) => ({
+    updateDie((prevDie) => ({
       ...prevDie,
       name,
       updatedAt: getCurrentTimestamp(),
     }));
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const updateSides = useCallback((sides: number) => {
-    validateAndUpdate((prevDie) => {
+    updateDie((prevDie) => {
       // Clamp sides to valid range
       const clampedSides = Math.max(MIN_SIDES, Math.min(MAX_SIDES, sides));
       
@@ -119,26 +120,26 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
         updatedAt: getCurrentTimestamp(),
       };
     });
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const updateBackgroundColor = useCallback((backgroundColor: string) => {
-    validateAndUpdate((prevDie) => ({
+    updateDie((prevDie) => ({
       ...prevDie,
       backgroundColor,
       updatedAt: getCurrentTimestamp(),
     }));
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const updateTextColor = useCallback((textColor: string) => {
-    validateAndUpdate((prevDie) => ({
+    updateDie((prevDie) => ({
       ...prevDie,
       textColor,
       updatedAt: getCurrentTimestamp(),
     }));
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const updateContentType = useCallback((contentType: FaceContentType) => {
-    validateAndUpdate((prevDie) => {
+    updateDie((prevDie) => {
       // Regenerate all faces with new content type
       const newFaces = createDefaultFaces(prevDie.sides, contentType);
       
@@ -149,10 +150,10 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
         updatedAt: getCurrentTimestamp(),
       };
     });
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const updateFace = useCallback((faceId: number, updates: Partial<Face>) => {
-    validateAndUpdate((prevDie) => {
+    updateDie((prevDie) => {
       const updatedFaces = prevDie.faces.map(face =>
         face.id === faceId ? { ...face, ...updates } : face
       );
@@ -163,15 +164,15 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
         updatedAt: getCurrentTimestamp(),
       };
     });
-  }, [validateAndUpdate]);
+  }, [updateDie]);
 
   const reset = useCallback(() => {
-    validateAndUpdate(() => createEmptyDie());
-  }, [validateAndUpdate]);
+    updateDie(() => createEmptyDie());
+  }, [updateDie]);
 
   const loadDie = useCallback((newDie: Die) => {
-    validateAndUpdate(() => newDie);
-  }, [validateAndUpdate]);
+    updateDie(() => newDie);
+  }, [updateDie]);
 
   // T005: Mark a field as touched (called on blur)
   const markFieldTouched = useCallback((fieldName: string) => {
@@ -202,7 +203,7 @@ export function useDieState(initialDie?: Die): UseDieStateReturn {
       }
       return false;
     }
-  }, [die, validateDie]);
+  }, [die]);
 
   return {
     die,
