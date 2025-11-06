@@ -13,6 +13,9 @@ import {
   loadDiceSets as loadDiceSetsFromStorage,
   deleteDiceSet as deleteDiceSetFromStorage,
 } from '@/lib/storage';
+import { generateUUID } from '@/lib/uuid';
+import { MAX_NAME_LENGTH } from '@/lib/constants';
+import { getCurrentTimestamp } from '@/lib/timestamp';
 
 interface UseDiceStorageReturn {
   // Dice state
@@ -25,11 +28,13 @@ interface UseDiceStorageReturn {
   saveDie: (die: Die) => Promise<void>;
   deleteDie: (id: string) => Promise<boolean>;
   loadDie: (id: string) => Die | undefined;
+  duplicateDie: (id: string) => Promise<Die | null>;
   
   // Dice set operations
   saveDiceSet: (diceSet: DiceSet) => Promise<void>;
   deleteDiceSet: (id: string) => Promise<boolean>;
   loadDiceSet: (id: string) => DiceSet | undefined;
+  duplicateDiceSet: (id: string) => Promise<DiceSet | null>;
   
   // Utility operations
   refreshLibrary: () => Promise<void>;
@@ -149,6 +154,43 @@ export function useDiceStorage(): UseDiceStorageReturn {
   }, [dice]);
   
   /**
+   * Duplicate a die - creates a copy with new ID and " (Copy)" suffix
+   */
+  const duplicateDie = useCallback(async (id: string): Promise<Die | null> => {
+    setError(null);
+    
+    try {
+      const originalDie = dice.find(d => d.id === id);
+      if (!originalDie) {
+        setError('Die not found');
+        return null;
+      }
+      
+      const now = getCurrentTimestamp();
+      const copySuffix = ' (Copy)';
+      const maxBaseLength = MAX_NAME_LENGTH - copySuffix.length;
+      const baseName = originalDie.name.slice(0, maxBaseLength);
+      const newName = baseName + copySuffix;
+      
+      // Create duplicate with new ID and updated metadata
+      const duplicatedDie: Die = {
+        ...originalDie,
+        id: generateUUID(),
+        name: newName,
+        createdAt: now,
+        updatedAt: now,
+      };
+      
+      await saveDie(duplicatedDie);
+      return duplicatedDie;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to duplicate die';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [dice, saveDie]);
+  
+  /**
    * Save a dice set to storage and update state
    */
   const saveDiceSet = useCallback(async (diceSet: DiceSet) => {
@@ -207,6 +249,43 @@ export function useDiceStorage(): UseDiceStorageReturn {
   }, [diceSets]);
   
   /**
+   * Duplicate a dice set - creates a copy with new ID and " (Copy)" suffix
+   */
+  const duplicateDiceSet = useCallback(async (id: string): Promise<DiceSet | null> => {
+    setError(null);
+    
+    try {
+      const originalSet = diceSets.find(s => s.id === id);
+      if (!originalSet) {
+        setError('Dice set not found');
+        return null;
+      }
+      
+      const now = getCurrentTimestamp();
+      const copySuffix = ' (Copy)';
+      const maxBaseLength = MAX_NAME_LENGTH - copySuffix.length;
+      const baseName = originalSet.name.slice(0, maxBaseLength);
+      const newName = baseName + copySuffix;
+      
+      // Create duplicate with new ID and updated metadata
+      const duplicatedSet: DiceSet = {
+        ...originalSet,
+        id: generateUUID(),
+        name: newName,
+        createdAt: now,
+        updatedAt: now,
+      };
+      
+      await saveDiceSet(duplicatedSet);
+      return duplicatedSet;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to duplicate dice set';
+      setError(errorMessage);
+      throw err;
+    }
+  }, [diceSets, saveDiceSet]);
+  
+  /**
    * Clear current error state
    */
   const clearError = useCallback(() => {
@@ -221,9 +300,11 @@ export function useDiceStorage(): UseDiceStorageReturn {
     saveDie,
     deleteDie,
     loadDie,
+    duplicateDie,
     saveDiceSet,
     deleteDiceSet,
     loadDiceSet,
+    duplicateDiceSet,
     refreshLibrary,
     clearError,
   };

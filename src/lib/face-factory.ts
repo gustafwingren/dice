@@ -51,6 +51,42 @@ export function createDefaultFaces(
 }
 
 /**
+ * Adjusts faces array when the number of sides changes, preserving existing face data
+ * 
+ * When increasing sides: Keeps all existing faces and adds new faces with default values
+ * When decreasing sides: Keeps only the first N faces (where N = new sides count)
+ * 
+ * @param existingFaces - Current array of faces
+ * @param newSides - New number of sides
+ * @param contentType - Content type for any new faces that need to be created
+ * @returns Array of Face objects with preserved data where possible
+ */
+export function adjustFacesForSideChange(
+  existingFaces: Face[],
+  newSides: number,
+  contentType: FaceContentType
+): Face[] {
+  const currentSides = existingFaces.length;
+  
+  // If decreasing sides, truncate the array
+  if (newSides < currentSides) {
+    return existingFaces.slice(0, newSides);
+  }
+  
+  // If increasing sides, add new faces with default values
+  if (newSides > currentSides) {
+    const newFaces = Array.from(
+      { length: newSides - currentSides },
+      (_, i) => createDefaultFace(currentSides + i + 1, contentType)
+    );
+    return [...existingFaces, ...newFaces];
+  }
+  
+  // Same number of sides, return the original array (no unnecessary copy)
+  return existingFaces;
+}
+
+/**
  * Gets a default color from a preset palette based on index
  * Cycles through colors if more faces than palette colors
  * 

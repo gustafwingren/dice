@@ -6,6 +6,7 @@
 export { SunIcon } from './SunIcon';
 export { MoonIcon } from './MoonIcon';
 export { TrashIcon } from './TrashIcon';
+export { DuplicateIcon } from './DuplicateIcon';
 export { CalendarIcon } from './CalendarIcon';
 export { CheckIcon } from './CheckIcon';
 export { CloseIcon } from './CloseIcon';

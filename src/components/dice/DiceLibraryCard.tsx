@@ -12,6 +12,9 @@ export interface DiceLibraryCardProps {
   
   /** Called when delete is requested */
   onDelete?: (id: string) => void;
+  
+  /** Called when duplicate is requested */
+  onDuplicate?: (id: string) => void;
 }
 
 /**
@@ -27,6 +30,7 @@ export function DiceLibraryCard({
   die,
   onClick,
   onDelete,
+  onDuplicate,
 }: DiceLibraryCardProps) {
   const handleCardClick = () => {
     if (onClick) {
@@ -40,6 +44,12 @@ export function DiceLibraryCard({
     }
   };
   
+  const handleDuplicate = () => {
+    if (onDuplicate) {
+      onDuplicate(die.id);
+    }
+  };
+  
   // Show first 6 faces as preview
   const previewFaces = die.faces.slice(0, 6);
   
@@ -50,6 +60,7 @@ export function DiceLibraryCard({
       createdAt={new Date(die.createdAt)}
       onClick={handleCardClick}
       onDelete={handleDelete}
+      onDuplicate={onDuplicate ? handleDuplicate : undefined}
       ariaLabel={`Load die ${die.name || 'Untitled Die'}`}
       hoverBorderColor="primary"
     >

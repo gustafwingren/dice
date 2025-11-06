@@ -34,7 +34,7 @@ export interface DiceLibraryProps {
  */
 export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
   const router = useRouter();
-  const { dice, diceSets, isLoading, error, deleteDie, deleteDiceSet } = useDiceStorage();
+  const { dice, diceSets, isLoading, error, deleteDie, deleteDiceSet, duplicateDie, duplicateDiceSet } = useDiceStorage();
   const { showToast } = useToast();
   
   // T045, T046: Progressive loading state
@@ -73,6 +73,18 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
     }
   };
 
+  const handleDuplicateDie = async (id: string) => {
+    try {
+      const duplicated = await duplicateDie(id);
+      if (duplicated) {
+        showToast(`Die "${duplicated.name}" created successfully!`, 'success');
+      }
+    } catch (error) {
+      console.error('Failed to duplicate die:', error);
+      showToast('Failed to duplicate die. Please try again.', 'error');
+    }
+  };
+
   const handleLoadDiceSet = (diceSet: DiceSet) => {
     if (onLoadDiceSet) {
       onLoadDiceSet(diceSet);
@@ -93,6 +105,18 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
     } catch (error) {
       console.error('Failed to delete dice set:', error);
       showToast('Failed to delete dice set. Please try again.', 'error');
+    }
+  };
+
+  const handleDuplicateDiceSet = async (id: string) => {
+    try {
+      const duplicated = await duplicateDiceSet(id);
+      if (duplicated) {
+        showToast(`Dice set "${duplicated.name}" created successfully!`, 'success');
+      }
+    } catch (error) {
+      console.error('Failed to duplicate dice set:', error);
+      showToast('Failed to duplicate dice set. Please try again.', 'error');
     }
   };
   
@@ -188,6 +212,7 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
                   dice={setDice}
                   onClick={() => handleLoadDiceSet(diceSet)}
                   onDelete={handleDeleteDiceSet}
+                  onDuplicate={handleDuplicateDiceSet}
                 />
               );
             })}
@@ -224,6 +249,7 @@ export function DiceLibrary({ onLoadDie, onLoadDiceSet }: DiceLibraryProps) {
                 die={die}
                 onClick={handleLoadDie}
                 onDelete={handleDeleteDie}
+                onDuplicate={handleDuplicateDie}
               />
             ))}
           </div>

@@ -4,7 +4,7 @@
  */
 
 import { ReactNode } from 'react';
-import { TrashIcon, CalendarIcon } from '@/components/icons';
+import { TrashIcon, DuplicateIcon, CalendarIcon } from '@/components/icons';
 
 interface LibraryCardProps {
   /** Card title */
@@ -19,6 +19,8 @@ interface LibraryCardProps {
   onClick: () => void;
   /** Called when delete is requested */
   onDelete: () => void;
+  /** Called when duplicate is requested (optional) */
+  onDuplicate?: () => void;
   /** Aria label for the card */
   ariaLabel: string;
   /** Border color on hover */
@@ -32,6 +34,7 @@ export function LibraryCard({
   createdAt,
   onClick,
   onDelete,
+  onDuplicate,
   ariaLabel,
   hoverBorderColor = 'primary'
 }: LibraryCardProps) {
@@ -39,6 +42,14 @@ export function LibraryCard({
     e.stopPropagation();
     e.preventDefault();
     onDelete();
+  };
+
+  const handleDuplicate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onDuplicate) {
+      onDuplicate();
+    }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -88,16 +99,26 @@ export function LibraryCard({
               {subtitle}
             </p>
           </div>
-          <button
-            onClick={handleDelete}
-            // Touch target: 44x44px minimum (WCAG AA compliant)
-            // Padding p-2 (8px) is applied inside the min-size constraints for icon centering
-            className="p-2 min-w-11 min-h-11 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors shrink-0 flex items-center justify-center"
-            aria-label={`Delete ${title}`}
-            tabIndex={0}
-          >
-            <TrashIcon />
-          </button>
+          <div className="flex gap-2 shrink-0">
+            {onDuplicate && (
+              <button
+                onClick={handleDuplicate}
+                className="p-2 min-w-11 min-h-11 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded transition-colors flex items-center justify-center"
+                aria-label={`Duplicate ${title}`}
+                tabIndex={0}
+              >
+                <DuplicateIcon />
+              </button>
+            )}
+            <button
+              onClick={handleDelete}
+              className="p-2 min-w-11 min-h-11 text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/20 rounded transition-colors flex items-center justify-center"
+              aria-label={`Delete ${title}`}
+              tabIndex={0}
+            >
+              <TrashIcon />
+            </button>
+          </div>
         </div>
       </div>
 

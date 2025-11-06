@@ -4,6 +4,7 @@ import { Face } from '@/types';
 import { FaceEditor } from './FaceEditor';
 import { Button } from '../ui/Button';
 import { useState } from 'react';
+import { MIN_SIDES, MAX_SIDES } from '@/lib/constants';
 
 export interface FaceListProps {
   /** Array of faces to display */
@@ -17,6 +18,12 @@ export interface FaceListProps {
   
   /** Optional validation errors per face */
   errors?: Record<number, string>;
+  
+  /** Optional callback when user wants to change sides count via inline controls */
+  onSidesChange?: (newSides: number) => void;
+  
+  /** Current number of sides (needed for boundary checks) */
+  currentSides?: number;
 }
 
 // T045-T046: Progressive loading increment for large face lists
@@ -37,8 +44,15 @@ export function FaceList({
   onUpdateFace,
   onBatchUpdate,
   errors = {},
+  onSidesChange,
+  currentSides,
 }: FaceListProps) {
   const [isApplyingBatch, setIsApplyingBatch] = useState(false);
+  
+  // Calculate actual sides count from faces length or prop
+  const sidesCount = currentSides ?? faces.length;
+  const canAddFace = sidesCount < MAX_SIDES;
+  const canRemoveFace = sidesCount > MIN_SIDES;
   
   // T045-T046: Progressive loading for large face lists (similar to DiceLibrary)
   const [visibleFaceCount, setVisibleFaceCount] = useState(INITIAL_VISIBLE_FACES);
@@ -186,6 +200,46 @@ export function FaceList({
           >
             Show More Faces ({faces.length - visibleFaceCount} remaining)
           </Button>
+        </div>
+      )}
+      
+      {/* Inline face management controls */}
+      {onSidesChange && (
+        <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+          <div className="flex items-center justify-between gap-4">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="font-medium mb-1">Adjust Face Count</p>
+              <p className="text-xs" role="status" aria-live="polite">
+                {canAddFace && canRemoveFace
+                  ? 'Add or remove faces without losing your work'
+                  : !canAddFace
+                  ? `Maximum ${MAX_SIDES} faces reached`
+                  : `Minimum ${MIN_SIDES} faces required`}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => onSidesChange(sidesCount - 1)}
+                variant="secondary"
+                size="sm"
+                disabled={!canRemoveFace}
+                aria-label="Remove last face"
+                title={canRemoveFace ? 'Remove the last face' : `Cannot have fewer than ${MIN_SIDES} faces`}
+              >
+                Remove Face
+              </Button>
+              <Button
+                onClick={() => onSidesChange(sidesCount + 1)}
+                variant="primary"
+                size="sm"
+                disabled={!canAddFace}
+                aria-label="Add new face"
+                title={canAddFace ? 'Add a new face with default value' : `Cannot exceed ${MAX_SIDES} faces`}
+              >
+                Add Face
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
